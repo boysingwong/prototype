@@ -1,0 +1,14 @@
+1. fix catalog_number redundancy (ie. "abc" vs "abc1"), 
+ change program in pub_product_exists
+
+2. case 158, GFP with "-" attached usually.
+
+3. case 163 to 167, incorrectly marking immunochistochemical & staining as 2 different technical group,
+should not use partental name, should use technique group instead
+
+4. case 176 & 177, change in past program and new logic.
+dun mixed up Chromatin Immunoprecipitation = ChIP, but not immunoprecipiatation
+
+5. implement point 12.
+
+6. for PMC search, incluce search of Novus

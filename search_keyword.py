@@ -5,14 +5,16 @@ import re
 import sys
 from warnings import filterwarnings
 
+TAG_RE = re.compile(r'<[^>]+>')
+
 def search_keyword():
 	filterwarnings('ignore', category = MySQLdb.Warning)
 	sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
 	print "start connection"
 	try:
-		# mysql = MySQLdb.connect(user='root',passwd='password1',db='scin_db',host='127.0.0.1',port=3306, autocommit = 'True', charset = 'utf8', use_unicode = True)
-		mysql = MySQLdb.connect(user='root',passwd='db_4tp3fen',db='scin_db',host='127.0.0.1',port=8796, autocommit = 'True', charset = 'utf8', use_unicode = True)
+		mysql = MySQLdb.connect(user='root',passwd='password1',db='scin_db',host='127.0.0.1',port=3306, autocommit = 'True', charset = 'utf8', use_unicode = True)
+		# mysql = MySQLdb.connect(user='root',passwd='db_4tp3fen',db='scin_db',host='127.0.0.1',port=8796, autocommit = 'True', charset = 'utf8', use_unicode = True)
 		mysql_cursor = mysql.cursor()
 		print "connect successfully"
 		
@@ -27,6 +29,12 @@ def search_keyword():
 			sentenceList = re.split(ur'(?<!\w\.\w.)(?<![A-Z]\.)(?<=\.|\?)\s', content)
 			for sentence in sentenceList:
 				keyword_exists = False
+				
+				# remove tag
+				sentence = remove_tags(sentence)
+				
+				# trim space
+				sentence = sentence.strip()
 
 				print "process sentence [%s]" % sentence
 
@@ -58,6 +66,7 @@ def search_keyword():
 			sentence = sentence.rstrip('.')
 			wordList = re.split('\s', sentence)
 			for word in wordList:
+				word = word.replace(",", "")
 				insertStmt2 = ("INSERT INTO scin_db.pub_keyword_result_splits "
 							   "(rslt_id, sentence, word) "
 							   "VALUES (%s, %s, %s)")
@@ -75,6 +84,9 @@ def search_keyword():
 			w.write(errmsg)
 		sys.exit(1)
 
+def remove_tags(text):
+	return TAG_RE.sub('', text)
+		
 def main():
 	search_keyword()
 

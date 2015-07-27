@@ -34,9 +34,12 @@ create table pub_keyword_result_splits
 
 
 -- insert result into target  (generalize it into stored procedure later)
-SELECT id, 'TITLE', id, 'Huridin', title  FROM scin_pub_meta WHERE title COLLATE UTF8_GENERAL_CI LIKE '%Huridin%';
-SELECT doc_id, 'DISCUSSION', id, 'Huridin', content FROM scin_pub_discussion WHERE content COLLATE UTF8_GENERAL_CI LIKE '%Huridin%';
-SELECT doc_id, 'ABSTRACT', id, 'Huridin', content FROM scin_pub_abstract  WHERE content COLLATE UTF8_GENERAL_CI LIKE '%Huridin%';
+INSERT INTO pub_keyword_temp (doc_id, source, source_id, keyword, content)
+  SELECT id, 'TITLE', id, 'Hirudin', title  FROM scin_pub_meta WHERE title COLLATE UTF8_GENERAL_CI LIKE '%Hirudin%';
+INSERT INTO pub_keyword_temp (doc_id, source, source_id, keyword, content)
+  SELECT doc_id, 'DISCUSSION', id, 'Hirudin', content FROM scin_pub_discussion WHERE content COLLATE UTF8_GENERAL_CI LIKE '%Hirudin%';
+INSERT INTO pub_keyword_temp (doc_id, source, source_id, keyword, content)
+  SELECT doc_id, 'ABSTRACT', id, 'Hirudin', content FROM scin_pub_abstract  WHERE content COLLATE UTF8_GENERAL_CI LIKE '%Hirudin%';
 
 
 /* python scripts 
