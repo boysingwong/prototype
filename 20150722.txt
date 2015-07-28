@@ -8,7 +8,29 @@ should not use partental name, should use technique group instead
 
 4. case 176 & 177, change in past program and new logic.
 dun mixed up Chromatin Immunoprecipitation = ChIP, but not immunoprecipiatation
+	- update into pub_search_tech
+	- need update in scripts as well
 
 5. implement point 12.
 
 6. for PMC search, incluce search of Novus
+
+7. share my code to Elvis and David (TBC)
+	- define workflow of upload
+	- GitHub
+		|-prototype
+		|-scinapsis			(shared to David repository)
+			|-scripts
+				|-Plosone
+				|-patch_data
+				|-prod_tech_search
+			|-scin
+		|-db_scripts			(shared to David repository)
+
+
+
+homework (20150728):
+1. sync stored_procedure_revamp.sql and run_product_tech.py
+1. verify pub_technique_exists
+	- check against immunoprecipitation and chromatin immunoprecipitation 
+2. implement the same CHIP and immunoprecipitation logic to scirpt

@@ -7,9 +7,45 @@ DECLARE v_tech_id INT(11);
 DECLARE v_technique_group VARCHAR(100);
 DECLARE v_parental_name VARCHAR(100);
 DECLARE v_alternative_name VARCHAR(100);
+
+DECLARE v_header VARCHAR(800);
+DECLARE v_content LONGTEXT;
+
 DECLARE done BOOLEAN DEFAULT FALSE;
-DECLARE cur1 CURSOR FOR SELECT id, technique_group, parental_name, alternative FROM scin_db.pub_technique_list;
+DECLARE cur1 CURSOR FOR 
+    SELECT id, technique_group, parental_name, alternative 
+    FROM scin_db.pub_technique_list 
+    WHERE alternative NOT IN ('Immunoprecipitation', 'Chromatin Immunoprecipitation');
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+SELECT header, content 
+INTO v_header, v_content
+FROM scin_db.scin_pub_material_n_method 
+WHERE doc_id = p_doc_id;
+
+IF (v_header REGEXP CONCAT('([[:space:]]|^)', 'Chromatin Immunoprecipitation', '([[:space:]]|$)') OR
+    v_content REGEXP CONCAT('([[:space:]]|^)', 'Chromatin Immunoprecipitation', '([[:space:]]|$)')) THEN
+  INSERT INTO scin_db.pub_technique_result (doc_id, tech_id, technique_group, tech_parental_name, tech_alternative)
+    SELECT p_doc_id, id, technique_group, parental_name, alternative
+    FROM scin_db.pub_technique_list T1
+    WHERE parental_name = 'ChIP'
+    AND NOT EXISTS (
+      SELECT 1 FROM scin_db.pub_technique_result T2
+      WHERE T2.doc_id = p_doc_id
+      AND T2.tech_id = T1.id
+    );
+ELSEIF (v_header REGEXP CONCAT('([[:space:]]|^)', 'Immunoprecipitation', '([[:space:]]|$)') OR
+    v_content REGEXP CONCAT('([[:space:]]|^)', 'Immunoprecipitation', '([[:space:]]|$)')) THEN
+  INSERT INTO scin_db.pub_technique_result (doc_id, tech_id, technique_group, tech_parental_name, tech_alternative)
+    SELECT p_doc_id, id, technique_group, parental_name, alternative
+    FROM scin_db.pub_technique_list T1
+    WHERE parental_name = 'Immunoprecipitation'
+    AND NOT EXISTS (
+      SELECT 1 FROM scin_db.pub_technique_result T2
+      WHERE T2.doc_id = p_doc_id
+      AND T2.tech_id = T1.id
+    );
+END IF;
 
 OPEN cur1;
 techLoop: LOOP
@@ -23,8 +59,8 @@ techLoop: LOOP
     IF EXISTS(SELECT 1
                 FROM scin_db.scin_pub_material_n_method
                 WHERE doc_id = p_doc_id
-                AND (content REGEXP CONCAT('([[:<:]]|^)', v_alternative_name, '([[:>:]]|$)') OR
-                    header REGEXP CONCAT('([[:<:]]|^)', v_alternative_name, '([[:>:]]|$)'))
+                AND (content REGEXP CONCAT('([[:space:]]|^)', v_alternative_name, '([[:space:]]|$)') OR
+                    header REGEXP CONCAT('([[:space:]]|^)', v_alternative_name, '([[:space:]]|$)'))
                 ) THEN
         INSERT INTO scin_db.pub_technique_result (doc_id, tech_id, technique_group, tech_parental_name, tech_alternative) 
             SELECT p_doc_id, id, technique_group, parental_name, alternative

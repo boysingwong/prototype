@@ -116,7 +116,7 @@ def search_product_tech(doc_id):
 
 # TODO: 1. review structure technique_result and technique_list related tables
 def getRating(mysql_cursor, sentence, doc_id):
-	rating = 1
+	rating = 0
 	techGroupSet = set()
 	productSet = set()
 
@@ -140,8 +140,7 @@ def getRating(mysql_cursor, sentence, doc_id):
 			techGroupSet.add(technique_group)
 
 	if (len(techGroupSet) > 1 or len(techGroupSet) <= 0):
-		rating = 0
-		return rating
+		rating = rating - 1
 
 	# Rule 2: keywords pattern exceptions
 	parentTech = list(techGroupSet)[0]
@@ -154,8 +153,7 @@ def getRating(mysql_cursor, sentence, doc_id):
 		for rankDownItem in rankDownList:
 			if rankDownItem in sentence:
 				# TODO: implement exception
-				rating = 0
-				return rating
+				rating = rating - 1
 
 	# 2b: a. Immuno-Staining
 	if parentTech.lower() == "Immunostaining".lower():
@@ -175,15 +173,13 @@ def getRating(mysql_cursor, sentence, doc_id):
 		# 2bi
 		for rankDownItem in rankDownList:
 			if containStain and rankDownItem in sentence:
-				rating = 0
-				return rating
+				rating = rating - 1
 
 		# 2bii
 		pattern3 = ur'(?i)\b%s\b' % ("microscopy")
 		pattern4 = ur'(?i)\b%s\b' % ("electron")
-		if containStain and (re.search(pattern3, sentence) and re.search(pattern4, sentence)):
-			rating = 0
-			return rating
+		if (re.search(pattern3, sentence) and re.search(pattern4, sentence)):
+			rating = rating - 1
 
 	# 2c: Western Blotting
 	if parentTech.lower() == "Western blot".lower():
@@ -191,8 +187,7 @@ def getRating(mysql_cursor, sentence, doc_id):
 
 		for rankDownItem in rankDownList:
 			if rankDownItem in sentence:
-				rating = 0
-				return rating
+				rating = rating - 1
 
 	# 2d: FACS
 	if parentTech.lower() == "FACS".lower():
@@ -200,8 +195,7 @@ def getRating(mysql_cursor, sentence, doc_id):
 
 		for rankDownItem in rankDownList:
 			if rankDownItem in sentence:
-				rating = 0
-				return rating
+				rating = rating - 1
 
 	# 2e: Immuno-Precipitation
 	if parentTech.lower() == "Immunoprecipitation".lower():
@@ -210,8 +204,7 @@ def getRating(mysql_cursor, sentence, doc_id):
 		pattern3 = ur'\b%s\b' % ("DNA")
 
 		if re.search(pattern1, sentence) and (re.search(pattern2, sentence) or re.search(pattern3, sentence)):
-			rating = 0
-			return rating
+			rating = rating - 1
 
 	# 2f: Immuno-Staining or Western Blotting
 	if parentTech.lower() == "Immunostaining".lower() or parentTech.lower() == "Western blot".lower():
@@ -220,27 +213,20 @@ def getRating(mysql_cursor, sentence, doc_id):
 
 		for rankDownItem in rankDownList:
 			if rankDownItem in sentence:
-				rating = 0
-				return rating
+				rating = rating - 1
 
 	# 2g: General Rule1
 	rankDownListGeneral_1 = ["GFP", "EGFP", "RFP", "YFP"]
 	for rankDownItem in rankDownListGeneral_1:
 		tempSentence = sentence.replace("-", "")
 		if rankDownItem in sentence:
-			rating = 0
-			for productItem in productSet:	# reset if keyword exists in product
-				rating = 1
-
-		if rating == 0:
-			return rating
+			rating = rating - 1
 
 	# 2h: General Rule2
 	rankDownListGeneral_2 = ["siRNA", "shRNA", "knock down", "Knock down", "knocking down", "Knocking down", 
 							"knock out", "Knock out", "knocking out", "Knocking out", "KO", "RNAi"]
 	for rankDownItem in rankDownListGeneral_2:
 			if rankDownItem in sentence:
-				rating = 0
-				return rating
+				rating = rating - 1
 
 	return rating
