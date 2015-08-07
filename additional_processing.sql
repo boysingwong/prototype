@@ -8,5 +8,7 @@ select * from scin_db.pub_tech_prod_result where sentence REGEXP '[[:digit:]]+[[
 
 -- search cell line exists
 select * from scin_db.pub_tech_prod_result rslt
+inner join scin_db.pub_cell_line_alternative alt
+on rslt.sentence REGEXP CONCAT ('([[:space:]]|^)', alt.name, '([[:space:]]|$)')
 inner join scin_db.pub_cell_line line
-on rslt.sentence REGEXP CONCAT ('([[:space:]]|^)', line.name, '([[:space:]]|$)');
+on alt.cellline_id = line.id;
