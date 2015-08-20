@@ -7,8 +7,9 @@ select * from scin_db.pub_tech_prod_result where sentence REGEXP '[[:digit:]]+[[
 
 
 -- search cell line exists
-select * from scin_db.pub_tech_prod_result rslt
+select *, line.name as cellline , alt.name as alternative from scin_db.pub_tech_prod_result rslt
 inner join scin_db.pub_cell_line_alternative alt
-on rslt.sentence REGEXP CONCAT ('([[:space:]]|^)', alt.name, '([[:space:]]|$)')
+on (length(alt.name) <= 2 and BINARY rslt.sentence REGEXP BINARY CONCAT ('([[:space:]]|^)', alt.name, '[[:space:]]cell')) or
+   (length(alt.name) > 2 and rslt.sentence REGEXP CONCAT ('([[:space:]]|^)', alt.name, '[[:space:]]cell'))
 inner join scin_db.pub_cell_line line
 on alt.cellline_id = line.id;

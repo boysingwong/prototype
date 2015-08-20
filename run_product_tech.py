@@ -91,13 +91,13 @@ def search_product_tech(doc_id):
 							continue
 
 				if technique_exists and protein_exists:
-					rating = getRating(mysql_cursor, sentence, doc_id)
+					rating, matchDesc = getRating(mysql_cursor, sentence, doc_id, technique_group)
 					insertStmt = ("INSERT INTO scin_db.pub_tech_prod_result "
-								  "(doc_id, figure_id, si_id, tech_id, technique_group, tech_parental_name, tech_alternative, prod_id, supplier, catalog_nb, prod_name_id, product_name, sentence, rating) "
-								  "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
+								  "(doc_id, figure_id, si_id, tech_id, technique_group, tech_parental_name, tech_alternative, prod_id, supplier, catalog_nb, prod_name_id, product_name, sentence, rating, match_desc) "
+								  "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
 					mysql_cursor.execute(insertStmt, (
 						doc_id, figure_id, si_id, tech_id, technique_group, tech_parental_name, tech_alternative, prod_id,
-						supplier, catalog_nb, prod_name_id, product_name, sentence, rating))
+						supplier, catalog_nb, prod_name_id, product_name, sentence, rating, matchDesc))
 					mysql.commit()
 
 					rsltCount = rsltCount + 1
@@ -115,8 +115,9 @@ def search_product_tech(doc_id):
 
 
 # TODO: 1. review structure technique_result and technique_list related tables
-def getRating(mysql_cursor, sentence, doc_id):
+def getRating(mysql_cursor, sentence, doc_id, src_technique_group):
 	rating = 0
+	matchDesc = ""
 	techGroupSet = set()
 	productSet = set()
 
@@ -126,7 +127,7 @@ def getRating(mysql_cursor, sentence, doc_id):
 				  "ON pn_tab.prod_id = pr_tab.prod_id "
 				  "WHERE pr_tab.doc_id = %s")
 	mysql_cursor.execute(searchStmt, (doc_id))
-	for (prod_name) in mysql_cursor:
+	for (prod_name, ) in mysql_cursor:
 		productSet.add(prod_name)
 
 	# Rules 1: check sentence with different keyword of different parent (eg.IP + WB)
@@ -139,29 +140,54 @@ def getRating(mysql_cursor, sentence, doc_id):
 		if re.search(pattern, sentence):
 			techGroupSet.add(technique_group)
 
-	if (len(techGroupSet) > 1 or len(techGroupSet) <= 0):
-		rating = rating - 1
+	if (len(techGroupSet) > 1):
+		matchDesc = matchDesc + "rule 1: {} techs; ".format(len(techGroupSet))
+		rating = rating - (len(techGroupSet) - 1)
+		
+	# 1a: General Rule1
+	rankDownListGeneral_1 = ["GFP", "EGFP", "RFP", "YFP"]
+	for rankDownItem in rankDownListGeneral_1:
+		tempSentence = sentence.replace("-", "")
+		if keywordExists(rankDownItem, sentence):
+			matchDesc = matchDesc + "rule 8: keyword[" + rankDownItem + "]; "
+			rating = rating - 1
+
+	# 1b: General Rule2
+	rankDownListGeneral_2 = ["siRNA", "siRNAs", "shRNA", "shRNAs", "knock down", "Knock down", "knocking down", "Knocking down", 
+							"knock out", "Knock out", "knocking out", "Knocking out", "KO", "DKO", "TKO", "QKO", "RNAi"]
+	for rankDownItem in rankDownListGeneral_2:
+		if keywordExists(rankDownItem, sentence):
+			matchDesc = matchDesc + "rule 9: keyword[" + rankDownItem + "]; "
+			rating = rating - 1
 
 	# Rule 2: keywords pattern exceptions
-	parentTech = list(techGroupSet)[0]
-
 	# 2a: a. Immuno-Precipitation or Western Blotting
-	if parentTech.lower() == "Immunoprecipitation".lower() or parentTech.lower() == "Western blot".lower():
-		rankDownList = ["flag", "Flag", "HA", "his", "His", "myc", "Myc", "gst", "Gst", 
-						"V5", "biotin", "Biotin", "glutathione-sepharose", "Glutathione-sepharose", "Tagged"]
+	if src_technique_group.lower() == "Immunoprecipitation".lower() or src_technique_group.lower() == "Western blot".lower():
+		rankDownList = ["flag", "Flag", "FLAG", "HA", "his", "His", "HIS", "myc", "Myc", "MYC", "gst", "Gst", "GST",
+						"V5", "biotin", "Biotin", "BIOTIN", "glutathione-sepharose", "Glutathione-sepharose", 
+						"glutathione-Sepharose", "Glutathione-Sepharose", "Tagged", "tagged", "TAGGED"]
 
 		for rankDownItem in rankDownList:
-			if rankDownItem in sentence:
+			if keywordExists(rankDownItem, sentence):
 				# TODO: implement exception
-				rating = rating - 1
+				productMatch = False
+				for productName in productSet:
+					if rankDownItem.lower() == productName.lower():
+						productMatch = True
+				
+				if productMatch == False:
+					matchDesc = matchDesc + "rule 1: keyword[" + rankDownItem + "]; "
+					rating = rating - 1
 
 	# 2b: a. Immuno-Staining
-	if parentTech.lower() == "Immunostaining".lower():
-		rankDownList = ["phaollodin", "Phaollodin", "annexin V", "Annexin V", "phase contrast", "Phase contrast", 
-						"H&E", "hoechst", "Hoechst", "DAPI", "tunel", "Tunel", "haematoxylin", "Haematoxylin", 
-						"prodpidium iodine", "Prodpidium iodine", "safranin O", "Safranin O", 
-						"β-gal", "Beta-gal", "beta-gal", "β-galactosidase", "Beta-galactosidase", "beta-galactosidase",
-						"wright giemsa", "Wright giemsa"]
+	if src_technique_group.lower() == "Immunostaining".lower():
+		rankDownList = ["phalloidin", "Phalloidin", "annexin", "Annexin", "phase contrast", "Phase contrast", "Phase Contrast", 
+						"H&E", "hoechst", "Hoechst", "DAPI", "tunel", "Tunel", "TUNEL", "haematoxylin", "Haematoxylin", 
+						"hematoxylin", "Hematoxylin", "prodpidium iodine", "Prodpidium iodine", "prodpidium Iodine", "Prodpidium Iodine", "PI", 
+						"safranin O", "Safranin O", 
+						u"β-gal", "Beta-gal", "beta-gal", u"β-galactosidase", "Beta-galactosidase", "beta-galactosidase",
+						u"β-Gal", "Beta-Gal", "beta-Gal", u"β-Galactosidase", "Beta-Galactosidase", "beta-Galactosidase",
+						"wright giemsa", "Wright giemsa", "wright Giemsa", "Wright Giemsa", "silver", "Silver"]
 
 		pattern1 = ur'(?i)\b%s\b' % ("stained")
 		pattern2 = ur'(?i)\b%s\b' % ("staining")
@@ -172,61 +198,60 @@ def getRating(mysql_cursor, sentence, doc_id):
 
 		# 2bi
 		for rankDownItem in rankDownList:
-			if containStain and rankDownItem in sentence:
+			if containStain and keywordExists(rankDownItem, sentence):
+				matchDesc = matchDesc + "rule 2: keyword[" + rankDownItem + "]; "
 				rating = rating - 1
 
 		# 2bii
 		pattern3 = ur'(?i)\b%s\b' % ("microscopy")
 		pattern4 = ur'(?i)\b%s\b' % ("electron")
 		if (re.search(pattern3, sentence) and re.search(pattern4, sentence)):
+			matchDesc = matchDesc + "rule 2: keyword[electron]; "
 			rating = rating - 1
 
 	# 2c: Western Blotting
-	if parentTech.lower() == "Western blot".lower():
+	if src_technique_group.lower() == "Western blot".lower():
 		rankDownList = ["silver", "Silver", "commassie", "Commassie", "ponceau", "Ponceau", "sypro", "Sypro"]
 
 		for rankDownItem in rankDownList:
-			if rankDownItem in sentence:
+			if keywordExists(rankDownItem, sentence):
+				matchDesc = matchDesc + "rule 4: keyword[" + rankDownItem + "]; "
 				rating = rating - 1
 
 	# 2d: FACS
-	if parentTech.lower() == "FACS".lower():
-		rankDownList = ["propidium Iodine", "Propidium Iodine"]
+	if src_technique_group.lower() == "FACS".lower():
+		rankDownList = ["propidium iodine", "Propidium iodine", "propidium Iodine", "Propidium Iodine", "PI", "annexin", "Annexin"]
 
 		for rankDownItem in rankDownList:
-			if rankDownItem in sentence:
+			if keywordExists(rankDownItem, sentence):
+				matchDesc = matchDesc + "rule 5: keyword[" + rankDownItem + "]; "
 				rating = rating - 1
 
 	# 2e: Immuno-Precipitation
-	if parentTech.lower() == "Immunoprecipitation".lower():
+	if src_technique_group.lower() == "Immunoprecipitation".lower():
 		pattern1 = ur'(?i)\b%s\b' % ("immunoprecipitation")
 		pattern2 = ur'(?i)\b%s\b' % ("chromatin")
 		pattern3 = ur'\b%s\b' % ("DNA")
 
 		if re.search(pattern1, sentence) and (re.search(pattern2, sentence) or re.search(pattern3, sentence)):
+			matchDesc = matchDesc + "rule 6: keyword[chromatin or DNA]; "
 			rating = rating - 1
 
 	# 2f: Immuno-Staining or Western Blotting
-	if parentTech.lower() == "Immunostaining".lower() or parentTech.lower() == "Western blot".lower():
+	if src_technique_group.lower() == "Immunostaining".lower() or src_technique_group.lower() == "Western blot".lower() or src_technique_group.lower() == "Immunoprecipitation".lower():
 		rankDownList = ["quantify", "Quantify", "quantified", "Quantified", "quantification", "Quantification", 
 					"table", "Table", "graph", "Graph", "bar graph", "Bar graph"]
 
 		for rankDownItem in rankDownList:
-			if rankDownItem in sentence:
+			if keywordExists(rankDownItem, sentence):
+				matchDesc = matchDesc + "rule 7: keyword[" + rankDownItem + "]; "
 				rating = rating - 1
 
-	# 2g: General Rule1
-	rankDownListGeneral_1 = ["GFP", "EGFP", "RFP", "YFP"]
-	for rankDownItem in rankDownListGeneral_1:
-		tempSentence = sentence.replace("-", "")
-		if rankDownItem in sentence:
-			rating = rating - 1
+	return rating, matchDesc
 
-	# 2h: General Rule2
-	rankDownListGeneral_2 = ["siRNA", "shRNA", "knock down", "Knock down", "knocking down", "Knocking down", 
-							"knock out", "Knock out", "knocking out", "Knocking out", "KO", "RNAi"]
-	for rankDownItem in rankDownListGeneral_2:
-			if rankDownItem in sentence:
-				rating = rating - 1
-
-	return rating
+def keywordExists(keyword, sentence):
+	pattern = ur'\b%s\b' % (keyword)
+	if re.search(pattern, sentence):
+		return True
+	else:
+		return False
