@@ -143,32 +143,42 @@ def getRating(mysql_cursor, sentence, doc_id, src_technique_group):
 	if (len(techGroupSet) > 1):
 		matchDesc = matchDesc + "rule 1: {} techs; ".format(len(techGroupSet))
 		rating = rating - (len(techGroupSet) - 1)
-		
+
+	# 6a: escaping ChIP search for IP src_technique_group
+	if src_technique_group.lower() == "Immunoprecipitation".lower():
+		chipKeywords = ["ChIP", "(c|C)hromatin(\s|-)(i|I)mmunoprecipitation"]
+		for keyword in chipKeywords:
+			matchObj = keywordExists(keyword, sentence)
+			if matchObj:
+				return rating, matchDesc
+
 	# 1a: General Rule1
 	rankDownListGeneral_1 = ["GFP", "EGFP", "RFP", "YFP"]
 	for rankDownItem in rankDownListGeneral_1:
 		tempSentence = sentence.replace("-", "")
-		if keywordExists(rankDownItem, sentence):
-			matchDesc = matchDesc + "rule 8: keyword[" + rankDownItem + "]; "
+		matchObj = keywordExists(rankDownItem, sentence)
+		if matchObj:
+			matchDesc = matchDesc + "rule 8: keyword[" + matchObj.group(1) + "]; "
 			rating = rating - 1
 
 	# 1b: General Rule2
-	rankDownListGeneral_2 = ["siRNA", "siRNAs", "shRNA", "shRNAs", "knock down", "Knock down", "knocking down", "Knocking down", 
-							"knock out", "Knock out", "knocking out", "Knocking out", "KO", "DKO", "TKO", "QKO", "RNAi"]
+	rankDownListGeneral_2 = ["siRNA", "siRNAs", "shRNA", "shRNAs", "(k|K)nock(\s|-)(d|D)own", "(k|K)nocking(\s|-)(d|D)own",
+							"(k|K)nock(\s|-)(o|O)ut", "(k|K)nocking(\s|-)(o|O)ut", "KO", "DKO", "TKO", "QKO", "RNAi"]
 	for rankDownItem in rankDownListGeneral_2:
-		if keywordExists(rankDownItem, sentence):
-			matchDesc = matchDesc + "rule 9: keyword[" + rankDownItem + "]; "
+		matchObj = keywordExists(rankDownItem, sentence)
+		if matchObj:
+			matchDesc = matchDesc + "rule 9: keyword[" + matchObj.group(1) + "]; "
 			rating = rating - 1
 
 	# Rule 2: keywords pattern exceptions
 	# 2a: a. Immuno-Precipitation or Western Blotting
 	if src_technique_group.lower() == "Immunoprecipitation".lower() or src_technique_group.lower() == "Western blot".lower():
 		rankDownList = ["flag", "Flag", "FLAG", "HA", "his", "His", "HIS", "myc", "Myc", "MYC", "gst", "Gst", "GST",
-						"V5", "biotin", "Biotin", "BIOTIN", "glutathione-sepharose", "Glutathione-sepharose", 
-						"glutathione-Sepharose", "Glutathione-Sepharose", "Tagged", "tagged", "TAGGED"]
+						"V5", "biotin", "Biotin", "BIOTIN", "(g|G)lutathione(\s|-)(s|S)epharose", "Tagged", "tagged", "TAGGED"]
 
 		for rankDownItem in rankDownList:
-			if keywordExists(rankDownItem, sentence):
+			matchObj = keywordExists(rankDownItem, sentence)
+			if matchObj:
 				# TODO: implement exception
 				productMatch = False
 				for productName in productSet:
@@ -176,18 +186,17 @@ def getRating(mysql_cursor, sentence, doc_id, src_technique_group):
 						productMatch = True
 				
 				if productMatch == False:
-					matchDesc = matchDesc + "rule 1: keyword[" + rankDownItem + "]; "
+					matchDesc = matchDesc + "rule 1: keyword[" + matchObj.group(1) + "]; "
 					rating = rating - 1
 
 	# 2b: a. Immuno-Staining
 	if src_technique_group.lower() == "Immunostaining".lower():
-		rankDownList = ["phalloidin", "Phalloidin", "annexin", "Annexin", "phase contrast", "Phase contrast", "Phase Contrast", 
+		rankDownList = ["phalloidin", "Phalloidin", "annexin", "Annexin", "(p|P)hase(\s|-)(c|C)ontrast",
 						"H&E", "hoechst", "Hoechst", "DAPI", "tunel", "Tunel", "TUNEL", "haematoxylin", "Haematoxylin", 
-						"hematoxylin", "Hematoxylin", "prodpidium iodine", "Prodpidium iodine", "prodpidium Iodine", "Prodpidium Iodine", "PI", 
+						"hematoxylin", "Hematoxylin", "(p|P)rodpidium(\s|-)(i|I)odine", "PI",
 						"safranin O", "Safranin O", 
-						u"β-gal", "Beta-gal", "beta-gal", u"β-galactosidase", "Beta-galactosidase", "beta-galactosidase",
-						u"β-Gal", "Beta-Gal", "beta-Gal", u"β-Galactosidase", "Beta-Galactosidase", "beta-Galactosidase",
-						"wright giemsa", "Wright giemsa", "wright Giemsa", "Wright Giemsa", "silver", "Silver"]
+						u"β-(g|G)al", "(b|B)eta-(g|G)al", u"β-(g|G)alactosidase", "(b|B)eta-(g|G)alactosidase",
+						"(w|W)right(\s|-)(g|G)iemsa", "silver", "Silver"]
 
 		pattern1 = ur'(?i)\b%s\b' % ("stained")
 		pattern2 = ur'(?i)\b%s\b' % ("staining")
@@ -198,8 +207,9 @@ def getRating(mysql_cursor, sentence, doc_id, src_technique_group):
 
 		# 2bi
 		for rankDownItem in rankDownList:
-			if containStain and keywordExists(rankDownItem, sentence):
-				matchDesc = matchDesc + "rule 2: keyword[" + rankDownItem + "]; "
+			matchObj = keywordExists(rankDownItem, sentence)
+			if containStain and matchObj:
+				matchDesc = matchDesc + "rule 2: keyword[" + matchObj.group(1) + "]; "
 				rating = rating - 1
 
 		# 2bii
@@ -214,17 +224,19 @@ def getRating(mysql_cursor, sentence, doc_id, src_technique_group):
 		rankDownList = ["silver", "Silver", "commassie", "Commassie", "ponceau", "Ponceau", "sypro", "Sypro"]
 
 		for rankDownItem in rankDownList:
-			if keywordExists(rankDownItem, sentence):
-				matchDesc = matchDesc + "rule 4: keyword[" + rankDownItem + "]; "
+			matchObj = keywordExists(rankDownItem, sentence)
+			if matchObj:
+				matchDesc = matchDesc + "rule 4: keyword[" + matchObj.group(1) + "]; "
 				rating = rating - 1
 
 	# 2d: FACS
 	if src_technique_group.lower() == "FACS".lower():
-		rankDownList = ["propidium iodine", "Propidium iodine", "propidium Iodine", "Propidium Iodine", "PI", "annexin", "Annexin"]
+		rankDownList = ["(p|P)ropidium(\s|-)(i|I)odine", "PI", "annexin", "Annexin"]
 
 		for rankDownItem in rankDownList:
-			if keywordExists(rankDownItem, sentence):
-				matchDesc = matchDesc + "rule 5: keyword[" + rankDownItem + "]; "
+			matchObj = keywordExists(rankDownItem, sentence)
+			if matchObj:
+				matchDesc = matchDesc + "rule 5: keyword[" + matchObj.group(1) + "]; "
 				rating = rating - 1
 
 	# 2e: Immuno-Precipitation
@@ -240,18 +252,17 @@ def getRating(mysql_cursor, sentence, doc_id, src_technique_group):
 	# 2f: Immuno-Staining or Western Blotting
 	if src_technique_group.lower() == "Immunostaining".lower() or src_technique_group.lower() == "Western blot".lower() or src_technique_group.lower() == "Immunoprecipitation".lower():
 		rankDownList = ["quantify", "Quantify", "quantified", "Quantified", "quantification", "Quantification", 
-					"table", "Table", "graph", "Graph", "bar graph", "Bar graph"]
+					"table", "Table", "graph", "Graph", "(b|B)ar(\s|-)(g|G)raph"]
 
 		for rankDownItem in rankDownList:
-			if keywordExists(rankDownItem, sentence):
-				matchDesc = matchDesc + "rule 7: keyword[" + rankDownItem + "]; "
+			matchObj = keywordExists(rankDownItem, sentence)
+			if matchObj:
+				matchDesc = matchDesc + "rule 7: keyword[" + matchObj.group(1) + "]; "
 				rating = rating - 1
 
 	return rating, matchDesc
 
 def keywordExists(keyword, sentence):
 	pattern = ur'\b%s\b' % (keyword)
-	if re.search(pattern, sentence):
-		return True
-	else:
-		return False
+	matchObj = re.search(pattern, sentence)
+	return matchObj
