@@ -2,13 +2,18 @@
 import re
 import codecs
 
+# arguement setup
+input_filename = "Abgent_AMAP_input.txt"
+output_filename = "Abgent_AMAP_output.txt"
+table_name = "temp_Abgent_AMAP_indexing"
+
 delimiters = "-", " ", '/', "(", ")", "[", "]"
 regexPattern = "|".join(map(re.escape, delimiters))
 print regexPattern
 
-outputFile = codecs.open("output_file.txt", encoding='utf-8', mode='w+')
+outputFile = codecs.open(output_filename, encoding='utf-8', mode='w+')
 
-with codecs.open(".\input_file.txt") as f:
+with codecs.open(input_filename) as f:
     lines = f.read().splitlines()
     for line in lines:
         # replace greek alphabet
@@ -26,7 +31,7 @@ with codecs.open(".\input_file.txt") as f:
         line = line.replace(u"Σ", "s")
 
         list = re.split(regexPattern, line)
-        outputStr = line
+        #outputStr = line
 
 		# insert concatenated
         # spaceJointStr = "".join(list)
@@ -44,14 +49,12 @@ with codecs.open(".\input_file.txt") as f:
         #     outputStr += ","
         #     outputStr += "-".join(list)
 
-        outputStr += ","
+        outputStr = ""
         for item in list:
             if len(item) > 0:
-                outputStr += item
-                outputStr += ","
+                outputStr += "insert into " + table_name + " values ('" + item + "');"
+                outputStr += '\n'
 
-        outputStr = outputStr.rstrip(',')
-        outputStr += "\n"
         outputFile.write(outputStr)
 
 outputFile.close()
