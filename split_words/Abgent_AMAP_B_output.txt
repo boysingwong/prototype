@@ -1,0 +1,493 @@
+﻿AP50187,CD24
+AP50188,ID1
+AP50188,Center
+AP50188,ID1 Center
+AP50188,ID1-Center
+AP50215,Phospho
+AP50215,IRAK1
+AP50215,S376
+AP50215,Phospho IRAK1
+AP50215,Phospho-IRAK1
+AP50215,Phospho S376
+AP50215,Phospho-S376
+AP50215,IRAK1 S376
+AP50215,IRAK1-S376
+AP50215,Phospho IRAK1 S376
+AP50215,Phospho-IRAK1-S376
+AP50809,HAS2
+AP50810,Anti
+AP50810,beta
+AP50810,Actin
+AP50810,Anti beta
+AP50810,Anti-beta
+AP50810,Anti Actin
+AP50810,Anti-Actin
+AP50810,beta Actin
+AP50810,beta-Actin
+AP50810,Anti beta Actin
+AP50810,Anti-beta-Actin
+AP50811,Anti
+AP50811,GAPDH 
+AP50811,Anti GAPDH 
+AP50811,Anti-GAPDH 
+AP50812,Anti
+AP50812,GAPDH
+AP50812,3E12
+AP50812,Anti GAPDH
+AP50812,Anti-GAPDH
+AP50812,Anti 3E12
+AP50812,Anti-3E12
+AP50812,GAPDH 3E12
+AP50812,GAPDH-3E12
+AP50812,Anti GAPDH 3E12
+AP50812,Anti-GAPDH-3E12
+AP50814,Anti
+AP50814,JAZF1
+AP50814,Anti JAZF1
+AP50814,Anti-JAZF1
+AP50855,Tubulin
+AP50855,Beta
+AP50855,Tubulin Beta
+AP50855,Tubulin-Beta
+AP50856,Alpha
+AP50856,smooth
+AP50856,muscle
+AP50856,Actin
+AP50856,Alpha smooth
+AP50856,Alpha-smooth
+AP50856,Alpha muscle
+AP50856,Alpha-muscle
+AP50856,Alpha Actin
+AP50856,Alpha-Actin
+AP50856,smooth muscle
+AP50856,smooth-muscle
+AP50856,smooth Actin
+AP50856,smooth-Actin
+AP50856,muscle Actin
+AP50856,muscle-Actin
+AP50856,Alpha smooth muscle
+AP50856,Alpha-smooth-muscle
+AP50856,Alpha smooth Actin
+AP50856,Alpha-smooth-Actin
+AP50856,Alpha muscle Actin
+AP50856,Alpha-muscle-Actin
+AP50856,smooth muscle Actin
+AP50856,smooth-muscle-Actin
+AP50856,Alpha smooth muscle Actin
+AP50856,Alpha-smooth-muscle-Actin
+AP50857,Alpha
+AP50857,smooth
+AP50857,muscle
+AP50857,Actin
+AP50857,Alpha smooth
+AP50857,Alpha-smooth
+AP50857,Alpha muscle
+AP50857,Alpha-muscle
+AP50857,Alpha Actin
+AP50857,Alpha-Actin
+AP50857,smooth muscle
+AP50857,smooth-muscle
+AP50857,smooth Actin
+AP50857,smooth-Actin
+AP50857,muscle Actin
+AP50857,muscle-Actin
+AP50857,Alpha smooth muscle
+AP50857,Alpha-smooth-muscle
+AP50857,Alpha smooth Actin
+AP50857,Alpha-smooth-Actin
+AP50857,Alpha muscle Actin
+AP50857,Alpha-muscle-Actin
+AP50857,smooth muscle Actin
+AP50857,smooth-muscle-Actin
+AP50857,Alpha smooth muscle Actin
+AP50857,Alpha-smooth-muscle-Actin
+AP50858,PACAP
+AP50858,PACAP 27
+AP50858,PACAP-27
+AP50858,PACAP 38
+AP50858,PACAP-38
+AP50858,27 38
+AP50858,27-38
+AP50858,PACAP 27 38
+AP50858,PACAP-27-38
+AP50859,Myelin
+AP50859,PLP
+AP50859,Myelin PLP
+AP50859,Myelin-PLP
+AP50860,MOG
+AP50861,Fibrinogen
+AP50861,beta
+AP50861,chain
+AP50861,Fibrinogen beta
+AP50861,Fibrinogen-beta
+AP50861,Fibrinogen chain
+AP50861,Fibrinogen-chain
+AP50861,beta chain
+AP50861,beta-chain
+AP50861,Fibrinogen beta chain
+AP50861,Fibrinogen-beta-chain
+AP50862,HAVCR1
+AP50863,KLF2
+AP50864,GAPDH
+AP50865,SGSH
+AP50866,ACTG2
+AP50867,CSP
+AP50868,AQP1
+AP50869,Anti
+AP50869,Anti B7
+AP50869,Anti-B7
+AP50869,Anti DC
+AP50869,Anti-DC
+AP50869,B7 DC
+AP50869,B7-DC
+AP50869,Anti B7 DC
+AP50869,Anti-B7-DC
+AP50877,ENTPD2
+AP50877,term
+AP50877,ENTPD2 N
+AP50877,ENTPD2-N
+AP50877,ENTPD2 term
+AP50877,ENTPD2-term
+AP50877,N term
+AP50877,N-term
+AP50877,ENTPD2 N term
+AP50877,ENTPD2-N-term
+AP50879,Anti
+AP50879,beta
+AP50879,Actin
+AP50879,Loading
+AP50879,Control
+AP50879,Anti beta
+AP50879,Anti-beta
+AP50879,Anti Actin
+AP50879,Anti-Actin
+AP50879,Anti Loading
+AP50879,Anti-Loading
+AP50879,Anti Control
+AP50879,Anti-Control
+AP50879,beta Actin
+AP50879,beta-Actin
+AP50879,beta Loading
+AP50879,beta-Loading
+AP50879,beta Control
+AP50879,beta-Control
+AP50879,Actin Loading
+AP50879,Actin-Loading
+AP50879,Actin Control
+AP50879,Actin-Control
+AP50879,Loading Control
+AP50879,Loading-Control
+AP50879,Anti beta Actin
+AP50879,Anti-beta-Actin
+AP50879,Anti beta Loading
+AP50879,Anti-beta-Loading
+AP50879,Anti beta Control
+AP50879,Anti-beta-Control
+AP50879,Anti Actin Loading
+AP50879,Anti-Actin-Loading
+AP50879,Anti Actin Control
+AP50879,Anti-Actin-Control
+AP50879,Anti Loading Control
+AP50879,Anti-Loading-Control
+AP50879,beta Actin Loading
+AP50879,beta-Actin-Loading
+AP50879,beta Actin Control
+AP50879,beta-Actin-Control
+AP50879,beta Loading Control
+AP50879,beta-Loading-Control
+AP50879,Actin Loading Control
+AP50879,Actin-Loading-Control
+AP50879,Anti beta Actin Loading
+AP50879,Anti-beta-Actin-Loading
+AP50879,Anti beta Actin Control
+AP50879,Anti-beta-Actin-Control
+AP50879,Anti beta Loading Control
+AP50879,Anti-beta-Loading-Control
+AP50879,Anti Actin Loading Control
+AP50879,Anti-Actin-Loading-Control
+AP50879,beta Actin Loading Control
+AP50879,beta-Actin-Loading-Control
+AP50879,Anti beta Actin Loading Control
+AP50879,Anti-beta-Actin-Loading-Control
+AP50880,Tubulin
+AP50880,alpha
+AP50880,Tubulin alpha
+AP50880,Tubulin-alpha
+AP50880,Tubulin 1
+AP50880,Tubulin-1
+AP50880,alpha 1
+AP50880,alpha-1
+AP50880,Tubulin alpha 1
+AP50880,Tubulin-alpha-1
+AP50881,GRO
+AP50881,Alpha
+AP50881,GRO Alpha
+AP50881,GRO-Alpha
+AP50882,PEDF
+AP50883,MX1
+AP50883,MX2
+AP50883,MX1 +
+AP50883,MX1-+
+AP50883,MX1 MX2
+AP50883,MX1-MX2
+AP50883,+ MX2
+AP50883,+-MX2
+AP50883,MX1 + MX2
+AP50883,MX1-+-MX2
+AP50884,Rabbit
+AP50884,Anti
+AP50884,IFNGR2
+AP50884,Rabbit Anti
+AP50884,Rabbit-Anti
+AP50884,Rabbit IFNGR2
+AP50884,Rabbit-IFNGR2
+AP50884,Anti IFNGR2
+AP50884,Anti-IFNGR2
+AP50884,Rabbit Anti IFNGR2
+AP50884,Rabbit-Anti-IFNGR2
+AP50906,Rabbit
+AP50906,Anti
+AP50906,HABP2
+AP50906,kDa
+AP50906,light
+AP50906,chain
+AP50906,Rabbit Anti
+AP50906,Rabbit-Anti
+AP50906,Rabbit HABP2
+AP50906,Rabbit-HABP2
+AP50906,Rabbit 27
+AP50906,Rabbit-27
+AP50906,Rabbit kDa
+AP50906,Rabbit-kDa
+AP50906,Rabbit light
+AP50906,Rabbit-light
+AP50906,Rabbit chain
+AP50906,Rabbit-chain
+AP50906,Anti HABP2
+AP50906,Anti-HABP2
+AP50906,Anti 27
+AP50906,Anti-27
+AP50906,Anti kDa
+AP50906,Anti-kDa
+AP50906,Anti light
+AP50906,Anti-light
+AP50906,Anti chain
+AP50906,Anti-chain
+AP50906,HABP2 27
+AP50906,HABP2-27
+AP50906,HABP2 kDa
+AP50906,HABP2-kDa
+AP50906,HABP2 light
+AP50906,HABP2-light
+AP50906,HABP2 chain
+AP50906,HABP2-chain
+AP50906,27 kDa
+AP50906,27-kDa
+AP50906,27 light
+AP50906,27-light
+AP50906,27 chain
+AP50906,27-chain
+AP50906,kDa light
+AP50906,kDa-light
+AP50906,kDa chain
+AP50906,kDa-chain
+AP50906,light chain
+AP50906,light-chain
+AP50906,Rabbit Anti HABP2
+AP50906,Rabbit-Anti-HABP2
+AP50906,Rabbit Anti 27
+AP50906,Rabbit-Anti-27
+AP50906,Rabbit Anti kDa
+AP50906,Rabbit-Anti-kDa
+AP50906,Rabbit Anti light
+AP50906,Rabbit-Anti-light
+AP50906,Rabbit Anti chain
+AP50906,Rabbit-Anti-chain
+AP50906,Rabbit HABP2 27
+AP50906,Rabbit-HABP2-27
+AP50906,Rabbit HABP2 kDa
+AP50906,Rabbit-HABP2-kDa
+AP50906,Rabbit HABP2 light
+AP50906,Rabbit-HABP2-light
+AP50906,Rabbit HABP2 chain
+AP50906,Rabbit-HABP2-chain
+AP50906,Rabbit 27 kDa
+AP50906,Rabbit-27-kDa
+AP50906,Rabbit 27 light
+AP50906,Rabbit-27-light
+AP50906,Rabbit 27 chain
+AP50906,Rabbit-27-chain
+AP50906,Rabbit kDa light
+AP50906,Rabbit-kDa-light
+AP50906,Rabbit kDa chain
+AP50906,Rabbit-kDa-chain
+AP50906,Rabbit light chain
+AP50906,Rabbit-light-chain
+AP50906,Anti HABP2 27
+AP50906,Anti-HABP2-27
+AP50906,Anti HABP2 kDa
+AP50906,Anti-HABP2-kDa
+AP50906,Anti HABP2 light
+AP50906,Anti-HABP2-light
+AP50906,Anti HABP2 chain
+AP50906,Anti-HABP2-chain
+AP50906,Anti 27 kDa
+AP50906,Anti-27-kDa
+AP50906,Anti 27 light
+AP50906,Anti-27-light
+AP50906,Anti 27 chain
+AP50906,Anti-27-chain
+AP50906,Anti kDa light
+AP50906,Anti-kDa-light
+AP50906,Anti kDa chain
+AP50906,Anti-kDa-chain
+AP50906,Anti light chain
+AP50906,Anti-light-chain
+AP50906,HABP2 27 kDa
+AP50906,HABP2-27-kDa
+AP50906,HABP2 27 light
+AP50906,HABP2-27-light
+AP50906,HABP2 27 chain
+AP50906,HABP2-27-chain
+AP50906,HABP2 kDa light
+AP50906,HABP2-kDa-light
+AP50906,HABP2 kDa chain
+AP50906,HABP2-kDa-chain
+AP50906,HABP2 light chain
+AP50906,HABP2-light-chain
+AP50906,27 kDa light
+AP50906,27-kDa-light
+AP50906,27 kDa chain
+AP50906,27-kDa-chain
+AP50906,27 light chain
+AP50906,27-light-chain
+AP50906,kDa light chain
+AP50906,kDa-light-chain
+AP50906,Rabbit Anti HABP2 27
+AP50906,Rabbit-Anti-HABP2-27
+AP50906,Rabbit Anti HABP2 kDa
+AP50906,Rabbit-Anti-HABP2-kDa
+AP50906,Rabbit Anti HABP2 light
+AP50906,Rabbit-Anti-HABP2-light
+AP50906,Rabbit Anti HABP2 chain
+AP50906,Rabbit-Anti-HABP2-chain
+AP50906,Rabbit Anti 27 kDa
+AP50906,Rabbit-Anti-27-kDa
+AP50906,Rabbit Anti 27 light
+AP50906,Rabbit-Anti-27-light
+AP50906,Rabbit Anti 27 chain
+AP50906,Rabbit-Anti-27-chain
+AP50906,Rabbit Anti kDa light
+AP50906,Rabbit-Anti-kDa-light
+AP50906,Rabbit Anti kDa chain
+AP50906,Rabbit-Anti-kDa-chain
+AP50906,Rabbit Anti light chain
+AP50906,Rabbit-Anti-light-chain
+AP50906,Rabbit HABP2 27 kDa
+AP50906,Rabbit-HABP2-27-kDa
+AP50906,Rabbit HABP2 27 light
+AP50906,Rabbit-HABP2-27-light
+AP50906,Rabbit HABP2 27 chain
+AP50906,Rabbit-HABP2-27-chain
+AP50906,Rabbit HABP2 kDa light
+AP50906,Rabbit-HABP2-kDa-light
+AP50906,Rabbit HABP2 kDa chain
+AP50906,Rabbit-HABP2-kDa-chain
+AP50906,Rabbit HABP2 light chain
+AP50906,Rabbit-HABP2-light-chain
+AP50906,Rabbit 27 kDa light
+AP50906,Rabbit-27-kDa-light
+AP50906,Rabbit 27 kDa chain
+AP50906,Rabbit-27-kDa-chain
+AP50906,Rabbit 27 light chain
+AP50906,Rabbit-27-light-chain
+AP50906,Rabbit kDa light chain
+AP50906,Rabbit-kDa-light-chain
+AP50906,Anti HABP2 27 kDa
+AP50906,Anti-HABP2-27-kDa
+AP50906,Anti HABP2 27 light
+AP50906,Anti-HABP2-27-light
+AP50906,Anti HABP2 27 chain
+AP50906,Anti-HABP2-27-chain
+AP50906,Anti HABP2 kDa light
+AP50906,Anti-HABP2-kDa-light
+AP50906,Anti HABP2 kDa chain
+AP50906,Anti-HABP2-kDa-chain
+AP50906,Anti HABP2 light chain
+AP50906,Anti-HABP2-light-chain
+AP50906,Anti 27 kDa light
+AP50906,Anti-27-kDa-light
+AP50906,Anti 27 kDa chain
+AP50906,Anti-27-kDa-chain
+AP50906,Anti 27 light chain
+AP50906,Anti-27-light-chain
+AP50906,Anti kDa light chain
+AP50906,Anti-kDa-light-chain
+AP50906,HABP2 27 kDa light
+AP50906,HABP2-27-kDa-light
+AP50906,HABP2 27 kDa chain
+AP50906,HABP2-27-kDa-chain
+AP50906,HABP2 27 light chain
+AP50906,HABP2-27-light-chain
+AP50906,HABP2 kDa light chain
+AP50906,HABP2-kDa-light-chain
+AP50906,27 kDa light chain
+AP50906,27-kDa-light-chain
+AP50906,Rabbit Anti HABP2 27 kDa
+AP50906,Rabbit-Anti-HABP2-27-kDa
+AP50906,Rabbit Anti HABP2 27 light
+AP50906,Rabbit-Anti-HABP2-27-light
+AP50906,Rabbit Anti HABP2 27 chain
+AP50906,Rabbit-Anti-HABP2-27-chain
+AP50906,Rabbit Anti HABP2 kDa light
+AP50906,Rabbit-Anti-HABP2-kDa-light
+AP50906,Rabbit Anti HABP2 kDa chain
+AP50906,Rabbit-Anti-HABP2-kDa-chain
+AP50906,Rabbit Anti HABP2 light chain
+AP50906,Rabbit-Anti-HABP2-light-chain
+AP50906,Rabbit Anti 27 kDa light
+AP50906,Rabbit-Anti-27-kDa-light
+AP50906,Rabbit Anti 27 kDa chain
+AP50906,Rabbit-Anti-27-kDa-chain
+AP50906,Rabbit Anti 27 light chain
+AP50906,Rabbit-Anti-27-light-chain
+AP50906,Rabbit Anti kDa light chain
+AP50906,Rabbit-Anti-kDa-light-chain
+AP50906,Rabbit HABP2 27 kDa light
+AP50906,Rabbit-HABP2-27-kDa-light
+AP50906,Rabbit HABP2 27 kDa chain
+AP50906,Rabbit-HABP2-27-kDa-chain
+AP50906,Rabbit HABP2 27 light chain
+AP50906,Rabbit-HABP2-27-light-chain
+AP50906,Rabbit HABP2 kDa light chain
+AP50906,Rabbit-HABP2-kDa-light-chain
+AP50906,Rabbit 27 kDa light chain
+AP50906,Rabbit-27-kDa-light-chain
+AP50906,Anti HABP2 27 kDa light
+AP50906,Anti-HABP2-27-kDa-light
+AP50906,Anti HABP2 27 kDa chain
+AP50906,Anti-HABP2-27-kDa-chain
+AP50906,Anti HABP2 27 light chain
+AP50906,Anti-HABP2-27-light-chain
+AP50906,Anti HABP2 kDa light chain
+AP50906,Anti-HABP2-kDa-light-chain
+AP50906,Anti 27 kDa light chain
+AP50906,Anti-27-kDa-light-chain
+AP50906,HABP2 27 kDa light chain
+AP50906,HABP2-27-kDa-light-chain
+AP50906,Rabbit Anti HABP2 27 kDa light
+AP50906,Rabbit-Anti-HABP2-27-kDa-light
+AP50906,Rabbit Anti HABP2 27 kDa chain
+AP50906,Rabbit-Anti-HABP2-27-kDa-chain
+AP50906,Rabbit Anti HABP2 27 light chain
+AP50906,Rabbit-Anti-HABP2-27-light-chain
+AP50906,Rabbit Anti HABP2 kDa light chain
+AP50906,Rabbit-Anti-HABP2-kDa-light-chain
+AP50906,Rabbit Anti 27 kDa light chain
+AP50906,Rabbit-Anti-27-kDa-light-chain
+AP50906,Rabbit HABP2 27 kDa light chain
+AP50906,Rabbit-HABP2-27-kDa-light-chain
+AP50906,Anti HABP2 27 kDa light chain
+AP50906,Anti-HABP2-27-kDa-light-chain
+AP50906,Rabbit Anti HABP2 27 kDa light chain
+AP50906,Rabbit-Anti-HABP2-27-kDa-light-chain
