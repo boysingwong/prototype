@@ -52,12 +52,22 @@ with codecs.open(input_filename) as f:
 
         outputSynonyms = []
         for synCombItem in synCombList:
-            output1 = " ".join(synCombItem)
-            output2 = "-".join(synCombItem)
+            output1 = "".join(synCombItem)
+            output2 = " ".join(synCombItem)
+            output3 = "-".join(synCombItem)
+
             if len(output1) >= 3:
                 outputSynonyms.append(output1)
-            if len(output2) >= 3 and output1 <> output2:
+            else:
+                output1 = ""
+
+            if len(output2) >= 3 and output2 <> output1:
                 outputSynonyms.append(output2)
+            else:
+                output2 = ""
+
+            if len(output3) >= 3 and output3 <> output1 and output3 <> output2:
+                outputSynonyms.append(output3)
 
 		# insert concatenated
         # spaceJointStr = "".join(list)
