@@ -2,98 +2,116 @@
 import re
 import codecs
 import itertools
+import sys
+import getopt
 
-# arguement setup
-input_filename = "Abgent_AMAP_B_input.txt"
-output_filename = "Abgent_AMAP_B_output.txt"
-table_name = "Abgent_AMAP_B_indexing"
+def main(argv):
+    filename = ""
+    try:
+        opts, args = getopt.getopt(argv,"hf:",["filename="])
+    except getopt.GetoptError:
+        print 'keyword_indexing.py -f <filename>'
+        sys.exit(2)
 
-delimiters = "-", " ", '/', "(", ")", "[", "]"
-regexPattern = "|".join(map(re.escape, delimiters))
-print regexPattern
+    for opt, arg in opts:
+        if opt == '-h':
+            print 'keyword_indexing.py -f <filename>'
+            sys.exit()
+        elif opt in ("-f", "--filename"):
+            filename = arg
 
-outputFile = codecs.open(output_filename, encoding='utf-8', mode='w+')
+    print "filename: " + filename
 
-with codecs.open(input_filename) as f:
-    lines = f.read().splitlines()
-    for line in lines:
-        print line
+    # arguement setup
+    input_filename = filename + "_input.txt"
+    output_filename = filename + "_output.txt"
+    table_name = filename + "_indexing"
 
-        # change line encoding as utf-8
-        line = line.decode('utf-8')
+    delimiters = "-", " ", '/', "(", ")", "[", "]"
+    regexPattern = "|".join(map(re.escape, delimiters))
+    print regexPattern
 
-        # split catalog_nb,product_fullname
-        lineItems = re.split(u",", line, flags=re.UNICODE)
-        catalogNb = lineItems[0]
-        prodName = lineItems[1]
+    outputFile = codecs.open(output_filename, encoding='utf-8', mode='w+')
 
-        # replace greek alphabet
-        prodName = prodName.replace(u"α", "a")
-        prodName = prodName.replace(u"β", "b")
-        prodName = prodName.replace(u"γ", "g")
-        prodName = prodName.replace(u"δ", "d")
-        prodName = prodName.replace(u"ε", "e")
-        prodName = prodName.replace(u"ζ", "z")
-        prodName = prodName.replace(u"θ", "t")
-        prodName = prodName.replace(u"κ", "k")
-        prodName = prodName.replace(u"λ", "l")
-        prodName = prodName.replace(u"Σ", "s")
+    with codecs.open(input_filename) as f:
+        lines = f.read().splitlines()
+        for line in lines:
+            print line
 
-        listItems = re.split(regexPattern, prodName)
-        listItems = filter(lambda a: a != "", listItems)
-        if "" in listItems:
-            listItems.remove("")
+            # change line encoding as utf-8
+            line = line.decode('utf-8')
 
-        # combinations of synonyms
-        synCombList = []
-        for i in range(1, len(listItems)+1):
-            tempList = list(itertools.combinations(listItems, i))
-            synCombList.extend(tempList)
+            # split catalog_nb,product_fullname
+            lineItems = re.split(u",", line, flags=re.UNICODE)
+            catalogNb = lineItems[0]
+            prodName = lineItems[1]
 
-        outputSynonyms = []
-        for synCombItem in synCombList:
-            output1 = "".join(synCombItem)
-            output2 = " ".join(synCombItem)
-            output3 = "-".join(synCombItem)
+            # replace greek alphabet
+            prodName = prodName.replace(u"α", "a")
+            prodName = prodName.replace(u"β", "b")
+            prodName = prodName.replace(u"γ", "g")
+            prodName = prodName.replace(u"δ", "d")
+            prodName = prodName.replace(u"ε", "e")
+            prodName = prodName.replace(u"ζ", "z")
+            prodName = prodName.replace(u"θ", "t")
+            prodName = prodName.replace(u"κ", "k")
+            prodName = prodName.replace(u"λ", "l")
+            prodName = prodName.replace(u"Σ", "s")
 
-            if len(output1) >= 3:
-                outputSynonyms.append(output1)
-            else:
-                output1 = ""
+            listItems = re.split(regexPattern, prodName)
+            listItems = filter(lambda a: a != "", listItems)
+            if "" in listItems:
+                listItems.remove("")
 
-            if len(output2) >= 3 and output2 <> output1:
-                outputSynonyms.append(output2)
-            else:
-                output2 = ""
+            # combinations of synonyms
+            synCombList = []
+            for i in range(1, len(listItems)+1):
+                tempList = list(itertools.combinations(listItems, i))
+                synCombList.extend(tempList)
 
-            if len(output3) >= 3 and output3 <> output1 and output3 <> output2:
-                outputSynonyms.append(output3)
+            outputSynonyms = []
+            for synCombItem in synCombList:
+                output1 = "".join(synCombItem)
+                output2 = " ".join(synCombItem)
+                output3 = "-".join(synCombItem)
 
-		# insert concatenated
-        # spaceJointStr = "".join(list)
-        # if spaceJointStr <> line:
-         #    outputStr += ","
-         #    outputStr += " ".join(list)
-        # insert space str
-        # spaceJointStr = " ".join(list)
-        # if spaceJointStr <> line:
-        #     outputStr += ","
-        #     outputStr += " ".join(list)
-        # insert hypen str
-        # hypenJointStr = "-".join(list)
-        # if hypenJointStr <> line:
-        #     outputStr += ","
-        #     outputStr += "-".join(list)
+                if len(output1) >= 3:
+                    outputSynonyms.append(output1)
+                else:
+                    output1 = ""
 
-        outputStr = ""
-        for item in outputSynonyms:
-            outputStr += catalogNb + "," + item
-            outputStr += '\n'
+                if len(output2) >= 3 and output2 <> output1:
+                    outputSynonyms.append(output2)
+                else:
+                    output2 = ""
 
-        outputFile.write(outputStr)
+                if len(output3) >= 3 and output3 <> output1 and output3 <> output2:
+                    outputSynonyms.append(output3)
 
-outputFile.close()
+            # insert concatenated
+            # spaceJointStr = "".join(list)
+            # if spaceJointStr <> line:
+             #    outputStr += ","
+             #    outputStr += " ".join(list)
+            # insert space str
+            # spaceJointStr = " ".join(list)
+            # if spaceJointStr <> line:
+            #     outputStr += ","
+            #     outputStr += " ".join(list)
+            # insert hypen str
+            # hypenJointStr = "-".join(list)
+            # if hypenJointStr <> line:
+            #     outputStr += ","
+            #     outputStr += "-".join(list)
 
-#example = "abd-123 ag"
-#list = re.split(regexPattern, example)
-#print list
+            outputStr = ""
+            for item in outputSynonyms:
+                outputStr += catalogNb + "," + item
+                outputStr += '\n'
+
+            outputFile.write(outputStr)
+
+    outputFile.close()
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
