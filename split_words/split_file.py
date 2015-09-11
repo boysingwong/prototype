@@ -14,16 +14,16 @@ with codecs.open(".\input_file.txt") as f:
         # replace greek alphabet
         line = line.decode('utf-8')
 
-        line = line.replace(u"α", "a")
-        line = line.replace(u"β", "b")
-        line = line.replace(u"γ", "g")
-        line = line.replace(u"δ", "d")
-        line = line.replace(u"ε", "e")
-        line = line.replace(u"ζ", "z")
-        line = line.replace(u"θ", "t")
-        line = line.replace(u"κ", "k")
-        line = line.replace(u"λ", "l")
-        line = line.replace(u"Σ", "s")
+        line = line.replace(u"Î±", "a")
+        line = line.replace(u"Î²", "b")
+        line = line.replace(u"Î³", "g")
+        line = line.replace(u"Î´", "d")
+        line = line.replace(u"Îµ", "e")
+        line = line.replace(u"Î¶", "z")
+        line = line.replace(u"Î¸", "t")
+        line = line.replace(u"Îº", "k")
+        line = line.replace(u"Î»", "l")
+        line = line.replace(u"Î£", "s")
 
         list = re.split(regexPattern, line)
         outputStr = line
