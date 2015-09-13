@@ -7,31 +7,38 @@ import getopt
 
 def main(argv):
     filename = ""
+    product_id = ""
     try:
-        opts, args = getopt.getopt(argv,"hf:",["filename="])
+        opts, args = getopt.getopt(argv,"hf:p:",["filename=","product_id="])
     except getopt.GetoptError:
-        print 'keyword_indexing.py -f <filename>'
+        print 'keyword_indexing.py -f <filename> -p <product_id>'
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            print 'keyword_indexing.py -f <filename>'
+            print 'keyword_indexing.py -f <filename> -p <product_id>'
             sys.exit()
         elif opt in ("-f", "--filename"):
             filename = arg
+        elif opt in ("-p", "--product_id"):
+            product_id = arg
+
 
     print "filename: " + filename
 
     # arguement setup
     input_filename = filename + "_input.txt"
-    output_filename = filename + "_output.txt"
+    output_filename = filename + "_output.sql"
     table_name = filename + "_indexing"
 
-    delimiters = "-", " ", '/', "(", ")", "[", "]"
+    delimiters = "+", "-", " ", '/', "(", ")", "[", "]"
     regexPattern = "|".join(map(re.escape, delimiters))
     print regexPattern
 
     outputFile = codecs.open(output_filename, encoding='utf-8', mode='w+')
+    #outputFile = open(output_filename, 'w', 10000000)
+    #outputFile = open(output_filename, 'w', 'ut-8')
+
 
     with codecs.open(input_filename) as f:
         lines = f.read().splitlines()
@@ -106,7 +113,10 @@ def main(argv):
 
             outputStr = ""
             for item in outputSynonyms:
-                outputStr += catalogNb + "," + item
+                outputStr += "insert into scin_db.pub_product_name (prod_id, name) "
+                outputStr += "select id, '" + item + "' from pub_product_info "
+                outputStr += "where catalog_nb = '" + catalogNb + "' "
+                outputStr += "and supplier_id = " + product_id + ";"
                 outputStr += '\n'
 
             outputFile.write(outputStr)
