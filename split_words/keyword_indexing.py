@@ -7,21 +7,18 @@ import getopt
 
 def main(argv):
     filename = ""
-    product_id = ""
     try:
-        opts, args = getopt.getopt(argv,"hf:p:",["filename=","product_id="])
+        opts, args = getopt.getopt(argv,"hf:",["filename="])
     except getopt.GetoptError:
-        print 'keyword_indexing.py -f <filename> -p <product_id>'
+        print 'keyword_indexing.py -f <filename>'
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            print 'keyword_indexing.py -f <filename> -p <product_id>'
+            print 'keyword_indexing.py -f <filename>'
             sys.exit()
         elif opt in ("-f", "--filename"):
             filename = arg
-        elif opt in ("-p", "--product_id"):
-            product_id = arg
 
 
     print "filename: " + filename
@@ -50,7 +47,7 @@ def main(argv):
 
             # split catalog_nb,product_fullname
             lineItems = re.split(u",", line, flags=re.UNICODE)
-            catalogNb = lineItems[0]
+            prodId = lineItems[0]
             prodName = lineItems[1]
 
             # replace greek alphabet
@@ -64,6 +61,8 @@ def main(argv):
             prodName = prodName.replace(u"κ", "k")
             prodName = prodName.replace(u"λ", "l")
             prodName = prodName.replace(u"Σ", "s")
+
+            prodName = prodName.replace(u"\'", "\\\'")
 
             listItems = re.split(regexPattern, prodName)
             listItems = filter(lambda a: a != "", listItems)
@@ -113,10 +112,8 @@ def main(argv):
 
             outputStr = ""
             for item in outputSynonyms:
-                outputStr += "insert into scin_db.pub_product_name (prod_id, name) "
-                outputStr += "select id, '" + item + "' from pub_product_info "
-                outputStr += "where catalog_nb = '" + catalogNb + "' "
-                outputStr += "and supplier_id = " + product_id + ";"
+                outputStr += "insert into pub_product_name (prod_id, name) "
+                outputStr += "values (" + prodId + ", '" + item + "'); "
                 outputStr += '\n'
 
             outputFile.write(outputStr)
