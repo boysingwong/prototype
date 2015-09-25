@@ -75,30 +75,54 @@ def main(argv):
                 if "" in listItems:
                     listItems.remove("")
 
-                # combinations of synonyms
-                synCombList = []
-                for i in range(1, len(listItems)+1):
-                    tempList = list(itertools.combinations(listItems, i))
-                    synCombList.extend(tempList)
-
+                # processing items and add into list
+                lastItem = ""
                 outputSynonyms = []
-                for synCombItem in synCombList:
-                    output1 = "".join(synCombItem)
-                    output2 = " ".join(synCombItem)
-                    output3 = "-".join(synCombItem)
+                for item in listItems:
+                    if len(lastItem) < 3:       # process last item
+                        synonym1 = lastItem + item
+                        synonym2 = lastItem + "-" + item
+                        if len(synonym1) >= 3:
+                            if not synonym1 in outputSynonyms: outputSynonyms.append(synonym1)
+                        if len(synonym2) >= 3:
+                            if not synonym2 in outputSynonyms: outputSynonyms.append(synonym2)
 
-                    if len(output1) >= 3:
-                        outputSynonyms.append(output1)
+                    if len(item) >= 3:
+                        outputSynonyms.append(item)
                     else:
-                        output1 = ""
+                        synonym1 = lastItem + item
+                        synonym2 = lastItem + "-" + item
+                        if len(synonym1) >= 3:
+                            if not synonym1 in outputSynonyms: outputSynonyms.append(synonym1)
+                        if len(synonym2) >= 3:
+                            if not synonym2 in outputSynonyms: outputSynonyms.append(synonym2)
 
-                    if len(output2) >= 3 and output2 <> output1:
-                        outputSynonyms.append(output2)
-                    else:
-                        output2 = ""
+                    lastItem = item
 
-                    if len(output3) >= 3 and output3 <> output1 and output3 <> output2:
-                        outputSynonyms.append(output3)
+                # combinations of synonyms
+                # synCombList = []
+                # for i in range(1, len(listItems)+1):
+                #     tempList = list(itertools.combinations(listItems, i))
+                #     synCombList.extend(tempList)
+                #
+                # outputSynonyms = []
+                # for synCombItem in synCombList:
+                #     output1 = "".join(synCombItem)
+                #     output2 = " ".join(synCombItem)
+                #     output3 = "-".join(synCombItem)
+                #
+                #     if len(output1) >= 3:
+                #         outputSynonyms.append(output1)
+                #     else:
+                #         output1 = ""
+                #
+                #     if len(output2) >= 3 and output2 <> output1:
+                #         outputSynonyms.append(output2)
+                #     else:
+                #         output2 = ""
+                #
+                #     if len(output3) >= 3 and output3 <> output1 and output3 <> output2:
+                #         outputSynonyms.append(output3)
 
                 outputStr = ""
                 for item in outputSynonyms:
