@@ -8,6 +8,8 @@ import tarfile
 
 def main(argv):
     # TODO: download the gz file from PMC
+    #       1. check download fail
+    #       2. if download fail process to next
 
     # Step 1: get file content as list
     # filelist = os.listdir("./")
@@ -36,32 +38,94 @@ def main(argv):
     tree = etree.parse(inputFile)
     root = tree.getroot()
 
-    # Step 4: get pub_meta
+    # Step 4: create header object and process content
     meta_obj = pub_meta()
 
-    source = "PubMed Center"
-    element = root.xpath('//publisher/publisher-name')
-    meta_obj.publisher = element[0].text
+    parseMeta(root, meta_obj)
 
-    element = root.xpath("//article-meta/article-id[@pub-id-type='pmc']")
-    meta_obj.doc_id = element[0].text
+def parseMeta(root, meta_obj):
+    element = root.xpath('//journal-meta/publisher/publisher-name')
+    if len(element) > 0:
+        meta_obj.publisher = element[0].text
 
-    # element = root.xpath("//article-meta/pub-date[@pub-type='epub']/year")
-    # meta_obj.year = element[0].text
+    element = root.xpath("//article-meta/title-group/article-title")
+    meta_obj.title = etree.tostring(element[0], method='text')          # REMARK: only way to strip out tags
+
+    element = root.xpath("//article-meta/article-id[@pub-id-type='doi']")
+    if len(element) > 0:
+        meta_obj.doc_id = element[0].text
+
+    # TODO: to add the new field into scin_pub_meta table
+    # element = root.xpath("//article-meta/article-id[@pub-id-type='pmid']")
+    # if len(element) > 0:
+    #     meta_obj.pmid = element[0].text
     #
-    # element = root.xpath("//article-meta/pub-date[@pub-type='epub']/month")
-    # meta_obj.month = element[0].text
-    #
-    # element = root.xpath("//article-meta/pub-date[@pub-type='epub']/day")
-    # meta_obj.day = element[0].text
+    # element = root.xpath("//article-meta/article-id[@pub-id-type='pmc']")
+    # if len(element) > 0:
+    #     meta_obj.pmc_id = element[0].text
 
-    meta_obj.pub_date = datetime.date(2015, 11, 22)
+    element = root.xpath("//article-meta/pub-date[@pub-type='epub']/year")
+    temp_year = int(element[0].text)
 
-    print meta_obj.publisher
-    print meta_obj.doc_id
+    element = root.xpath("//article-meta/pub-date[@pub-type='epub']/month")
+    temp_month = int(element[0].text)
+
+    element = root.xpath("//article-meta/pub-date[@pub-type='epub']/day")
+    temp_day = int(element[0].text)
+
+    meta_obj.pub_date = datetime.date(temp_year, temp_month, temp_day)
+
+    element = root.xpath("//article-meta/copyright-statement")
+    if len(element) > 0:
+        meta_obj.copyright = element[0].text
+
+    # TODO: to add new fields into scin_pub_meta table
+    # element = root.xpath("//permissions/license/license-p")
+    # if len(element) < 0:
+    #     meta_obj.license = element[0].text
+
+    elements = root.xpath("//article-meta/contrib-group/contrib[@contrib-type='author'][.//name/surname/text() and .//name/given-names/text()]")
+    authorStr = ""
+    for element in elements:
+        surname = element.xpath(".//name/surname/text()")[0]
+        givenName = element.xpath(".//name/given-names/text()")[0]
+        fullname = givenName + " " + surname
+        authorStr = authorStr + fullname + ","
+    authorStr.rstrip(',')
+    meta_obj.author = authorStr
+
+    meta_obj.rec_update_time = datetime.datetime.now()
+    meta_obj.rec_update_by = "sys"
 
     meta_obj.save()
 
+def parseMNM(root, meta_obj):
+    # check if MNM exists, if not then quit the method
+    element = root.xpath("//body/sec[@sec-type='materials|methods']")
+    if not len(element) > 0:
+        element = root.xpath("//body/sec[@sec-type='methods']")
+        if not len(element) > 0:
+            return
+
+    # check if section exists (2 ways processing)
+    sectElements = root.xpath("//body/sec[@sec-type='materials|methods']/sec")
+
+    if len(sectElements) > 0:
+        
+    else:
+        paragElements = root.xpath("//body/sec[@sec-type='materials|methods']/p")
+        contentSeq = 1
+        for element in paragElements:
+            # TODO: create MNM item from meta_obj
+            contentStr = etree.tostring(element, method='text')
+            mnm_obj = pub_material_n_method()
+            mnm_obj.doc = meta_obj
+            mnm_obj.section_id = 1
+            mnm_obj.header = ""
+            mnm_obj.content_seq = contentSeq
+            mnm_obj.content = contentStr
+            mnm_obj.save()
+            contentSeq = contentSeq + 1
 
 def removeDirContent(folder):
     for the_file in os.listdir(folder):
