@@ -1,4 +1,5 @@
 from lxml import etree
+import codecs
 import datetime
 import django
 import os
@@ -34,7 +35,10 @@ def main(argv):
             # 3. get the .nxml file and process
 
     # Step 3: parse xml file and save into root
-    inputFile = open('BCR-3-1-061.nxml', 'r')
+    #inputFile = open('BCR-3-1-061.nxml', 'r')          #case0
+    #inputFile = open('nihms-439946.nxml', 'r')          #case1
+    #inputFile = open('pgen.1004216.nxml', 'r')          #case2
+    inputFile = open('pone.0124191.nxml', 'r')          #case3
     tree = etree.parse(inputFile)
     root = tree.getroot()
 
@@ -42,6 +46,7 @@ def main(argv):
     meta_obj = pub_meta()
 
     parseMeta(root, meta_obj)
+    parseMNM(root, meta_obj)
 
 def parseMeta(root, meta_obj):
     element = root.xpath('//journal-meta/publisher/publisher-name')
@@ -101,23 +106,46 @@ def parseMeta(root, meta_obj):
 
 def parseMNM(root, meta_obj):
     # check if MNM exists, if not then quit the method
+    headerStr = "materials|methods"
     element = root.xpath("//body/sec[@sec-type='materials|methods']")
     if not len(element) > 0:
         element = root.xpath("//body/sec[@sec-type='methods']")
+        headerStr = "methods"
         if not len(element) > 0:
             return
 
     # check if section exists (2 ways processing)
-    sectElements = root.xpath("//body/sec[@sec-type='materials|methods']/sec")
+    sectXPathStr = "//body/sec[@sec-type='%s']/sec" % headerStr
+    sectElements = root.xpath(sectXPathStr)
 
     if len(sectElements) > 0:
-        
+        sectDtlXPathStr = "//body/sec[@sec-type='%s']/sec[./title][./p]" % headerStr
+        sectElements = root.xpath(sectDtlXPathStr)
+        titleSeq = 1
+        for sectElement in sectElements:
+            titleElements = sectElement.xpath("./title")
+            paraElements = sectElement.xpath("./p")
+            mnmTitle = etree.tostring(titleElements[0], method='text', encoding='utf8')
+
+            contentSeq = 1
+            for paraElement in paraElements:
+                paraStr = etree.tostring(paraElement, method='text', encoding='utf8')
+                mnm_obj = pub_material_n_method()
+                mnm_obj.doc = meta_obj
+                mnm_obj.section_id = titleSeq
+                mnm_obj.header = mnmTitle
+                mnm_obj.content_seq = contentSeq
+                mnm_obj.content = paraStr
+                mnm_obj.save()
+                contentSeq =  contentSeq + 1
+            titleSeq = titleSeq + 1
     else:
-        paragElements = root.xpath("//body/sec[@sec-type='materials|methods']/p")
+        sectDtlXPathStr = "//body/sec[@sec-type='%s']/p" % headerStr
+        sectDtlElements = root.xpath(sectDtlXPathStr)
         contentSeq = 1
-        for element in paragElements:
+        for element in sectDtlElements:
             # TODO: create MNM item from meta_obj
-            contentStr = etree.tostring(element, method='text')
+            contentStr = etree.tostring(element, method='text', encoding='utf8')
             mnm_obj = pub_material_n_method()
             mnm_obj.doc = meta_obj
             mnm_obj.section_id = 1
@@ -139,6 +167,7 @@ def removeDirContent(folder):
 
 if __name__ == "__main__":
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'scinapsis.settings')
+    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
     django.setup()
     from scin.models import pub_meta, pub_material_n_method, pub_result, pub_figure, pub_support_info, pub_abstract, pub_discussion
     main(sys.argv[1:])
