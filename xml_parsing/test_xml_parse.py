@@ -47,6 +47,8 @@ def main(argv):
 
     parseMeta(root, meta_obj)
     parseMNM(root, meta_obj)
+    parseResult(root, meta_obj)
+    parseSuppInfo(root, meta_obj)
 
 def parseMeta(root, meta_obj):
     element = root.xpath('//journal-meta/publisher/publisher-name')
@@ -106,25 +108,20 @@ def parseMeta(root, meta_obj):
 
 def parseMNM(root, meta_obj):
     # check if MNM exists, if not then quit the method
-    headerStr = "materials|methods"
-    element = root.xpath("//body/sec[@sec-type='materials|methods']")
-    if not len(element) > 0:
-        element = root.xpath("//body/sec[@sec-type='methods']")
-        headerStr = "methods"
-        if not len(element) > 0:
+    sectElement = root.xpath("//body/sec[@sec-type='materials|methods']")
+    if not len(sectElement) > 0:
+        sectElement = root.xpath("//body/sec[@sec-type='methods']")
+        if not len(sectElement) > 0:
             return
 
     # check if section exists (2 ways processing)
-    sectXPathStr = "//body/sec[@sec-type='%s']/sec" % headerStr
-    sectElements = root.xpath(sectXPathStr)
+    subSectElements = sectElement[0].xpath("./sec")
 
-    if len(sectElements) > 0:
-        sectDtlXPathStr = "//body/sec[@sec-type='%s']/sec[./title][./p]" % headerStr
-        sectElements = root.xpath(sectDtlXPathStr)
-        titleSeq = 1
-        for sectElement in sectElements:
-            titleElements = sectElement.xpath("./title")
-            paraElements = sectElement.xpath("./p")
+    if len(subSectElements) > 0:
+        subSectSeq = 1
+        for subSectElement in subSectElements:
+            titleElements = subSectElement.xpath("./title")
+            paraElements = subSectElement.xpath("./p")
             mnmTitle = etree.tostring(titleElements[0], method='text', encoding='utf8')
 
             contentSeq = 1
@@ -132,20 +129,18 @@ def parseMNM(root, meta_obj):
                 paraStr = etree.tostring(paraElement, method='text', encoding='utf8')
                 mnm_obj = pub_material_n_method()
                 mnm_obj.doc = meta_obj
-                mnm_obj.section_id = titleSeq
+                mnm_obj.section_id = subSectSeq
                 mnm_obj.header = mnmTitle
                 mnm_obj.content_seq = contentSeq
                 mnm_obj.content = paraStr
                 mnm_obj.save()
                 contentSeq =  contentSeq + 1
-            titleSeq = titleSeq + 1
+            subSectSeq = subSectSeq + 1
     else:
-        sectDtlXPathStr = "//body/sec[@sec-type='%s']/p" % headerStr
-        sectDtlElements = root.xpath(sectDtlXPathStr)
+        paraElements = sectElement[0].xpath("./p")
         contentSeq = 1
-        for element in sectDtlElements:
-            # TODO: create MNM item from meta_obj
-            contentStr = etree.tostring(element, method='text', encoding='utf8')
+        for paraElement in paraElements:
+            contentStr = etree.tostring(paraElement, method='text', encoding='utf8')
             mnm_obj = pub_material_n_method()
             mnm_obj.doc = meta_obj
             mnm_obj.section_id = 1
@@ -154,6 +149,86 @@ def parseMNM(root, meta_obj):
             mnm_obj.content = contentStr
             mnm_obj.save()
             contentSeq = contentSeq + 1
+
+def parseResult(root, meta_obj):
+    # check if MNM exists, if not then quit the method
+    sectElement = sectElement = root.xpath("//body/sec[./title[contains(text(),'Results')]]")
+    if not len(sectElement) > 0:
+        return
+
+    # check if section exists (2 ways processing)
+    subSectElements = sectElement[0].xpath("./sec")
+
+    if len(subSectElements) > 0:
+        subSectSeq = 1
+        for subSectElement in subSectElements:
+            titleElements = subSectElement.xpath("./title")
+            paraElements = subSectElement.xpath("./p")
+            resultTitle = etree.tostring(titleElements[0], method='text', encoding='utf8')
+
+            contentSeq = 1
+            for paraElement in paraElements:
+                paraStr = etree.tostring(paraElement, method='text', encoding='utf8')
+                rslt_obj = pub_result()
+                rslt_obj.doc = meta_obj
+                rslt_obj.section_id = subSectSeq
+                rslt_obj.header = resultTitle
+                rslt_obj.content_seq = contentSeq
+                rslt_obj.content = paraStr
+                rslt_obj.save()
+                contentSeq =  contentSeq + 1
+            subSectSeq = subSectSeq + 1
+    else:
+        paraElements = sectElement[0].xpath("./p")
+        contentSeq = 1
+        for paraElement in paraElements:
+            contentStr = etree.tostring(paraElement, method='text', encoding='utf8')
+            rslt_obj = pub_result()
+            rslt_obj.doc = meta_obj
+            rslt_obj.section_id = 1
+            rslt_obj.header = ""
+            rslt_obj.content_seq = contentSeq
+            rslt_obj.content = contentStr
+            rslt_obj.save()
+            contentSeq = contentSeq + 1
+
+def parseSuppInfo(root, meta_obj):
+    sectElement = root.xpath("//body/sec[@sec-type='supplementary-material']")
+    if not len(sectElement) > 0:
+        return
+
+    subSectElements = sectElement[0].xpath("./supplementary-material")
+
+    if len(subSectElements) > 0:
+        subSectSeq = 1
+        for subSectElement in subSectElements:
+            titleElements = subSectElement.xpath("./label")
+            paraElements = subSectElement.xpath(".//p")
+            urlStr = subSectElement.xpath("./media/@xlink:href", namespaces={'xlink': 'http://www.w3.org/1999/xlink'})[0]
+            suppInfoTitle = etree.tostring(titleElements[0], method='text', encoding='utf8')
+
+            # concatenate all paragraph content
+            paraStr = ""
+            for paraElement in paraElements:
+                paraStr = paraStr + etree.tostring(paraElement, method='text', encoding='utf8') + " "
+            paraStr.rstrip(" ")
+
+            suppInfo_obj = pub_support_info()
+            suppInfo_obj.doc = meta_obj
+            suppInfo_obj.section_id = subSectSeq
+            suppInfo_obj.header = suppInfoTitle
+            suppInfo_obj.content = paraStr
+            suppInfo_obj.url = urlStr
+            suppInfo_obj.save()
+
+            subSectSeq = subSectSeq + 1
+
+def parseFigure(root, meta_obj):
+    sectElement = root.xpath("Fig[contains(@id,'F']")
+    if len(sectElement) > 0:
+        return
+
+    subSectElement = sectElement[0].xpath("")
 
 def removeDirContent(folder):
     for the_file in os.listdir(folder):
