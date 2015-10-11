@@ -35,10 +35,10 @@ def main(argv):
             # 3. get the .nxml file and process
 
     # Step 3: parse xml file and save into root
-    #inputFile = open('BCR-3-1-061.nxml', 'r')          #case0
+    inputFile = open('BCR-3-1-061.nxml', 'r')          #case0
     #inputFile = open('nihms-439946.nxml', 'r')          #case1
     #inputFile = open('pgen.1004216.nxml', 'r')          #case2
-    inputFile = open('pone.0124191.nxml', 'r')          #case3
+    #inputFile = open('pone.0124191.nxml', 'r')          #case3
     tree = etree.parse(inputFile)
     root = tree.getroot()
 
