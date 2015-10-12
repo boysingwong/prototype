@@ -3,18 +3,30 @@ import codecs
 import datetime
 import django
 import os
+import re
 import shutil
 import sys
 import tarfile
 
-sys.path.append('C:\\Python27\\scinapsis')
+# sys.path.append('C:\\Python27\\scinapsis')
+sys.path.append('D:\\GitHub\\scinapsis')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'scinapsis.settings')
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 django.setup()
 from scin.models import pub_meta, pub_material_n_method, pub_result, pub_figure, pub_support_info, pub_abstract, pub_discussion
 
 def main(argv):     # debug
-    process_xml("3657744", "temp\\Nat_Med_2013_Mar_4_19(3)_345-350\\nihms-439946.nxml", "ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/7f/f4/13000_2014_Article_200.PMC4245773.pdf")
+    process_xml("3191056", "temp\\J_Biol_Chem_2011_Aug_26_286(34)_30171-30180\\zbc30171.nxml", "testing")           # missing mnm
+    process_xml("3929086", "temp\\Hum_Mol_Genet_2014_Mar_15_23(6)_1467-1478\\ddt534.nxml", "testing")
+    process_xml("3255975", "temp\\J_Cell_Biol_2012_Jan_9_196(1)_115-130\\JCB_201103116.nxml", "testing")
+    process_xml("2644779", "temp\\PLoS_ONE_2009_Feb_26_4(2)_e4597\\pone.0004597.nxml", "testing")
+    process_xml("3898697", "temp\\Neurobiol_Dis_2014_Feb_62(100)_426-440\\main.nxml", "testing")
+    process_xml("3771941", "temp\\Mol_Biol_Cell_2013_Sep_15_24(18)_2772-2784\\2772.nxml", "testing")
+    process_xml("4342580", "temp\\J_Cell_Sci_2015_Mar_1_128(5)_964-978\\jcs-128-05-0964.nxml", "testing")
+    process_xml("4237968", "temp\\Mol_Brain_2014_Aug_11_7_57\\s13041-014-0057-y.nxml", "testing")
+    process_xml("4003245", "temp\\J_Cell_Biol_2014_Apr_28_205(2)_143-153\\JCB_201402104.nxml", "testing")
+    process_xml("3930140", "temp\\eLife_2014_Feb_25_3_e01612\\elife01612.nxml", "testing")
+    process_xml("4091171", "temp\\Autophagy_2014_Jun_1_10(6)_1105-1119\\auto-10-1105.nxml", "testing")
 
 def process_xml(pmc_id, xmlFilename, pdfAddress):
     # TODO: expect input: pmc_id, file_name, pdf_file
@@ -45,6 +57,7 @@ def process_xml(pmc_id, xmlFilename, pdfAddress):
     try:
         parseMeta(root, meta_obj, pmc_id, pdfAddress)
     except:
+        inputFile.close()
         errmsg = "Error in parseMeta inputFile of pmc_id: %s \n" % ( pmc_id )
         with open("parse_error.log", 'a') as w:
             w.write(errmsg)
@@ -52,6 +65,7 @@ def process_xml(pmc_id, xmlFilename, pdfAddress):
     try:
         parseMNM(root, meta_obj)
     except:
+        inputFile.close()
         errmsg = "Error in parseMNM inputFile of pmc_id: %s \n" % ( pmc_id )
         with open("parse_error.log", 'a') as w:
             w.write(errmsg)
@@ -59,6 +73,7 @@ def process_xml(pmc_id, xmlFilename, pdfAddress):
     try:
         parseResult(root, meta_obj)
     except:
+        inputFile.close()
         errmsg = "Error in parseResult inputFile of pmc_id: %s\n" % ( pmc_id )
         with open("parse_error.log", 'a') as w:
             w.write(errmsg)
@@ -73,6 +88,7 @@ def process_xml(pmc_id, xmlFilename, pdfAddress):
     try:
         parseFigure(root, meta_obj)
     except:
+        inputFile.close()
         errmsg = "Error in parseFigure inputFile of pmc_id: %s\n" % ( pmc_id )
         with open("parse_error.log", 'a') as w:
             w.write(errmsg)
@@ -80,6 +96,7 @@ def process_xml(pmc_id, xmlFilename, pdfAddress):
     try:
         parseAbstract(root, meta_obj)
     except:
+        inputFile.close()
         errmsg = "Error in parseAbstract inputFile of pmc_id: %s\n" % ( pmc_id )
         with open("parse_error.log", 'a') as w:
             w.write(errmsg)
@@ -87,9 +104,13 @@ def process_xml(pmc_id, xmlFilename, pdfAddress):
     try:
         parseDiscussion(root, meta_obj)
     except:
+        inputFile.close()
         errmsg = "Error in parseDiscussion inputFile of pmc_id: %s\n" % ( pmc_id )
         with open("parse_error.log", 'a') as w:
             w.write(errmsg)
+
+    # close resource finally
+    inputFile.close()
 
 def parseMeta(root, meta_obj, pmc_id, pdfAddress):
     meta_obj.source = "PubMed Central"
@@ -99,7 +120,7 @@ def parseMeta(root, meta_obj, pmc_id, pdfAddress):
         meta_obj.publisher = element[0].text
 
     element = root.xpath("//article-meta/title-group/article-title")
-    meta_obj.title = etree.tostring(element[0], method='text')          # REMARK: only way to strip out tags
+    meta_obj.title = etree.tostring(element[0], method='text', encoding='utf8')          # REMARK: only way to strip out tags
 
     meta_obj.src_address = "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC" + pmc_id
     meta_obj.pdf_address = pdfAddress
@@ -120,13 +141,13 @@ def parseMeta(root, meta_obj, pmc_id, pdfAddress):
     if len(element) > 0:
         meta_obj.pmc_id = element[0].text
 
-    element = root.xpath("//article-meta/pub-date[@pub-type='epub']/year")
+    element = root.xpath("//article-meta/pub-date/year")
     temp_year = int(element[0].text)
 
-    element = root.xpath("//article-meta/pub-date[@pub-type='epub']/month")
+    element = root.xpath("//article-meta/pub-date/month")
     temp_month = int(element[0].text)
 
-    element = root.xpath("//article-meta/pub-date[@pub-type='epub']/day")
+    element = root.xpath("//article-meta/pub-date/day")
     temp_day = int(element[0].text)
 
     meta_obj.pub_date = datetime.date(temp_year, temp_month, temp_day)
@@ -163,7 +184,7 @@ def parseMNM(root, meta_obj):
             return
 
     # check if section exists (2 ways processing)
-    subSectElements = sectElement[0].xpath("./sec")
+    subSectElements = sectElement[0].xpath("./sec|./*/sec|./*/*/sec")
 
     if len(subSectElements) > 0:
         subSectSeq = 1
@@ -205,7 +226,7 @@ def parseResult(root, meta_obj):
         return
 
     # check if section exists (2 ways processing)
-    subSectElements = sectElement[0].xpath("./sec")
+    subSectElements = sectElement[0].xpath("./sec|./*/sec|./*/*/sec")
 
     if len(subSectElements) > 0:
         subSectSeq = 1
@@ -253,7 +274,15 @@ def parseSuppInfo(root, meta_obj):
             titleElements = subSectElement.xpath("./label")
             paraElements = subSectElement.xpath(".//p")
             urlStr = subSectElement.xpath("./media/@xlink:href", namespaces={'xlink': 'http://www.w3.org/1999/xlink'})[0]
-            suppInfoTitle = etree.tostring(titleElements[0], method='text', encoding='utf8')
+
+            # title
+            suppInfoTitle = ""
+            if len(titleElements) > 0:
+                suppInfoTitle = etree.tostring(titleElements[0], method='text', encoding='utf8')
+            else:
+                titleElements = subSectElement.xpath(".//title")
+                if len(titleElements) > 0:
+                    suppInfoTitle = etree.tostring(titleElements[0], method='text', encoding='utf8')
 
             # concatenate all paragraph content
             paraStr = ""
@@ -278,28 +307,34 @@ def parseFigure(root, meta_obj):
 
     for sectElement in sectElements:
         labelElements = sectElement.xpath("./label")
-        headerElements = sectElement.xpath(".//title")
-        paraElements = sectElement.xpath(".//p")
-        urlStr = sectElement.xpath(".//graphic/@xlink:href", namespaces={'xlink': 'http://www.w3.org/1999/xlink'})[0]
+        headerElements = sectElement.xpath("./title|./*/title|./*/*/title")
+        paraElements = sectElement.xpath("./p|./*/p|./*/*/p")
+        urlElements = sectElement.xpath(".//graphic/@xlink:href", namespaces={'xlink': 'http://www.w3.org/1999/xlink'})
+
+        urlStr = ""
+        if len(urlElements) > 0:
+            urlStr = urlElements[0]
 
         paraStr = ""
         for paraElement in paraElements:
             paraStr = paraStr + etree.tostring(paraElement, method='text', encoding='utf8') + " "
         paraStr.rstrip(" ")
 
+        figure_id = "0"
+        if len(labelElements) > 0:
+            labelStr = etree.tostring(labelElements[0], method='text', encoding='utf8')
+            figNumList = re.findall(r'\d+', labelStr)
+            if len(figNumList) > 0:
+                figure_id = figNumList[0]
+
+        headerStr = ""
+        if len(headerElements) > 0:
+            headerStr = etree.tostring(headerElements[0], method='text', encoding='utf8')
+
         figure_obj = pub_figure()
         figure_obj.doc = meta_obj
-
-        labelStr = etree.tostring(labelElements[0], method='text', encoding='utf8')
-        if labelStr.startswith("Figure "):
-            labelStr = labelStr.lstrip("Figure ")
-        elif labelStr.startswith("Fig "):
-            labelStr = labelStr.lstrip("Fig ")
-        figure_obj.figure_id = labelStr
-
-        if len(headerElements) > 0:
-            figure_obj.header = etree.tostring(headerElements[0], method='text', encoding='utf8')
-
+        figure_obj.figure_id = figure_id
+        figure_obj.header = headerStr
         figure_obj.content = paraStr
         figure_obj.url = urlStr
         figure_obj.save()
@@ -310,7 +345,7 @@ def parseAbstract(root, meta_obj):
         return
 
     # check if section exists (2 ways processing)
-    subSectElements = sectElement[0].xpath("./sec")
+    subSectElements = sectElement[0].xpath("./sec|./*/sec|./*/*/sec")
 
     if len(subSectElements) > 0:
         subSectSeq = 1
