@@ -6,10 +6,15 @@ import shutil
 import sys
 import tarfile
 import urllib2
-
 import parse_xml
 
+backupDir = 'F:\\scinapsis_PMC_backup'
+# backupDir = 'D:\\GitHub\\scinapsis\\scripts\\PMC\\zip_files'
+
 def main(argv):
+    process_input_file(1)
+
+def process_input_file(mode):       # mode: 0 - normal, 1 = rerun
     # read input file
     pmc_list_file = "input_file.txt"
     with codecs.open(pmc_list_file) as f:
@@ -58,16 +63,21 @@ def main(argv):
             print tarAddress
             print pdfAddress
             dldFilename = pmc_id +'.tar.gz'
-            with closing(urllib2.urlopen(tarAddress)) as r:
-                with open(dldFilename, 'wb') as f:
-                    shutil.copyfileobj(r, f)
-                    f.close()
+
+            if mode == 0:
+                with closing(urllib2.urlopen(tarAddress)) as r:
+                    with open(dldFilename, 'wb') as f:
+                        shutil.copyfileobj(r, f)
+                        f.close()
+            elif mode == 1:
+                srcFile = backupDir + "\\" + dldFilename
+                destDir = os.getcwd()
+                shutil.move(srcFile, destDir)
 
             # step4 extract file to specific file path and ready to process
             # if os.path.exists('temp'):
             #     os.mkdir('temp')
             removeDirContent('temp')        # remove temp content
-
             tar = tarfile.open(dldFilename)
             tar.extractall('temp')
             tar.close()
@@ -84,7 +94,6 @@ def main(argv):
             # step 5: remove directory and temp directory
             removeDirContent('temp')        # remove temp content
 
-            backupDir = 'F:\\scinapsis_PMC_backup'
             shutil.copy(dldFilename, backupDir)
             os.remove(dldFilename)
 
