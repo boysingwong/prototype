@@ -3,6 +3,7 @@ from lxml import etree
 import codecs
 import datetime
 import django
+import glob
 import os
 import re
 import shutil
@@ -70,6 +71,10 @@ def process_xml(pmc_id, xmlFilename, pdfAddress):
     tree = etree.parse(inputFile)
     root = tree.getroot()
 
+    # file path
+    srcFilePath = os.path.dirname(os.path.abspath(xmlFilename))
+    print srcFilePath
+
     # create header object and process content
     meta_obj = pub_meta()
 
@@ -109,7 +114,7 @@ def process_xml(pmc_id, xmlFilename, pdfAddress):
             print sys.exc_info()[0]
 
     try:
-        parseFigure(root, meta_obj)
+        parseFigure(root, meta_obj, pmc_id, srcFilePath)
     except:
         inputFile.close()
         errmsg = "Error in parseFigure inputFile of pmc_id: %s\n" % ( pmc_id )
@@ -334,7 +339,7 @@ def parseSuppInfo(root, meta_obj):
 
             subSectSeq = subSectSeq + 1
 
-def parseFigure(root, meta_obj):
+def parseFigure(root, meta_obj, pmc_id, srcFilePath):
     sectElements = root.xpath("//fig")
     if not len(sectElements) > 0:
         return
@@ -348,6 +353,11 @@ def parseFigure(root, meta_obj):
         urlStr = ""
         if len(urlElements) > 0:
             urlStr = urlElements[0]
+            # complete url
+            fileList = glob.glob(srcFilePath + "\\" + urlStr + ".*")
+            if len(fileList) > 0:
+                figFilename = os.path.basename(fileList[0])
+                urlStr = "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC" + pmc_id + "/bin/" + figFilename
 
         paraStr = ""
         for paraElement in paraElements:
