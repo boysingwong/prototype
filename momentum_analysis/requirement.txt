@@ -1,0 +1,13 @@
+Input:
+
+1. 5-10 yrs progressive data (more than 1000 stocks)
+2. 
+
+processing:
+
+1. back test (with 
+2. contarian signal (volumn, turning point, force)
+3. correlation analysis
+4. 
+
+output:

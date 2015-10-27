@@ -1,25 +1,26 @@
-Error in parseSuppInfo inputFile of pmc_id: 3191056
-Error in parseFigure inputFile of pmc_id: 3191056
-Error in parseMeta inputFile of pmc_id: 3929086 
-Error in parseSuppInfo inputFile of pmc_id: 3929086
-Error in parseFigure inputFile of pmc_id: 3929086
-Error in parseAbstract inputFile of pmc_id: 3929086
-Error in parseMeta inputFile of pmc_id: 3255975 
-Error in parseFigure inputFile of pmc_id: 3255975
-Error in parseAbstract inputFile of pmc_id: 3255975
-Error in parseDiscussion inputFile of pmc_id: 3255975
-Error in parseMeta inputFile of pmc_id: 2644779 
-Error in parseAbstract inputFile of pmc_id: 2644779
-Error in parseDiscussion inputFile of pmc_id: 2644779
-Error in parseMeta inputFile of pmc_id: 3898697 
-Error in parseFigure inputFile of pmc_id: 3898697
-Error in parseAbstract inputFile of pmc_id: 3898697
-Error in parseDiscussion inputFile of pmc_id: 3898697
-Error in parseSuppInfo inputFile of pmc_id: 3432468
-Error in parseMeta inputFile of pmc_id: 3771941 
-Error in parseSuppInfo inputFile of pmc_id: 3771941
-Error in parseFigure inputFile of pmc_id: 3771941
-Error in parseAbstract inputFile of pmc_id: 3771941
+Error in parseSuppInfo inputFile of pmc_id: 3191056	[no titleElements, or using xpath(".//title") ]
+Error in parseFigure inputFile of pmc_id: 3191056	[malformat in label, should use regex instead]
+Error in parseMeta inputFile of pmc_id: 3929086 	[fail to create pub_meta due to utf8 issue]
+Error in parseSuppInfo inputFile of pmc_id: 3929086	[no titleElements, or using xpath(".//title") ]
+Error in parseFigure inputFile of pmc_id: 3929086	[mal-format in label, should use regex instead]
+Error in parseAbstract inputFile of pmc_id: 3929086	[missing pub_meta, problem resolve if parseMeta is fixed]
+Error in parseMeta inputFile of pmc_id: 3255975		[incorrect pub-date, correct xpath using: root.xpath("//article-meta/pub-date/year")]
+Error in parseResult inputFile of pmc_id: 3255975	[missing pub_meta, problem resolve if parseMeta is fixed]
+Error in parseFigure inputFile of pmc_id: 3255975	[]
+Error in parseAbstract inputFile of pmc_id: 3255975	[missing pub_meta, problem resolve if parseMeta is fixed]
+Error in parseDiscussion inputFile of pmc_id: 3255975	[missing pub_meta, problem resolve if parseMeta is fixed]
+Error in parseMeta inputFile of pmc_id: 2644779 	[previous issues]
+Error in parseAbstract inputFile of pmc_id: 2644779	[previous issues]
+Error in parseDiscussion inputFile of pmc_id: 2644779	[previous issues]
+Error in parseMeta inputFile of pmc_id: 3898697		[previous issues]
+Error in parseFigure inputFile of pmc_id: 3898697	[previous issues]
+Error in parseAbstract inputFile of pmc_id: 3898697	[previous issues]
+Error in parseDiscussion inputFile of pmc_id: 3898697	[previous issues]
+Error in parseSuppInfo inputFile of pmc_id: 3432468	[not identified et]
+Error in parseMeta inputFile of pmc_id: 3771941		[previous issues]
+Error in parseSuppInfo inputFile of pmc_id: 3771941	[previous issues]
+Error in parseFigure inputFile of pmc_id: 3771941	[previous issues]
+Error in parseAbstract inputFile of pmc_id: 3771941	[previous issues]
 Error in parseMeta inputFile of pmc_id: 4342580 
 Error in parseSuppInfo inputFile of pmc_id: 4342580
 Error in parseFigure inputFile of pmc_id: 4342580
