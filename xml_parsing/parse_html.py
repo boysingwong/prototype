@@ -61,15 +61,16 @@ def process_html(pmc_id):
     response = urllib2.urlopen(req)
     html = response.read()
     root = etree.fromstring(html)
+    nsmap = {'h': 'http://www.w3.org/1999/xhtml'}
 
     # sample of extract namespace element for xhtml format
-    root.xpath("//h:h1", namespaces={'h':'http://www.w3.org/1999/xhtml'})
+    root.xpath("//h:head/h:title", namespaces=nsmap)
 
     # create header object and process content
     meta_obj = pub_meta()
 
     try:
-        parseMeta(root, meta_obj, pmc_id)
+        parseMeta(root, meta_obj, pmc_id, nsmap)
     except Exception, err:
         errmsg = "Error in parseMeta inputFile of pmc_id: %s \n" % ( pmc_id )
         with open("parse_error.log", 'a') as w:
@@ -125,69 +126,53 @@ def process_html(pmc_id):
             print sys.exc_info()[0]
 
 
-def parseMeta(root, meta_obj, pmc_id, pdfAddress):
+def parseMeta(root, meta_obj, pmc_id, nsmap):
     meta_obj.source = "PubMed Central"
 
-    element = root.xpath('//journal-meta//journal-title')
+    element = root.xpath("//h:head/h:meta[@name='citation_journal_title']/@content", namespaces=nsmap)
     if len(element) > 0:
-        meta_obj.publisher = etree.tostring(element[0],  method='text', encoding='utf8')
+        meta_obj.publisher = element[0]
 
-    element = root.xpath("//h:head/h:title", namespaces={'h':'http://www.w3.org/1999/xhtml'})
+    element = root.xpath("//h:head/h:title", namespaces=nsmap)
     meta_obj.title = etree.tostring(element[0], method='text', encoding='utf8')          # REMARK: only way to strip out tags
 
+    # TODO: get pdf_address from xpath directly
     meta_obj.src_address = "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC" + pmc_id
-    meta_obj.pdf_address = pdfAddress
 
-    element = root.xpath('//journal-meta/publisher/publisher-name')
+    element = root.xpath("//h:head/h:link[@rel='alternate' and @type='application/pdf']/@href", namespaces=nsmap)
     if len(element) > 0:
-        meta_obj.editors = etree.tostring(element[0],  method='text', encoding='utf8')
+        meta_obj.pdf_address = element[0]
 
-    element = root.xpath("//article-meta/article-id[@pub-id-type='doi']")
+    element = root.xpath("//h:head/h:meta[@name='DC.Publisher']/@content", namespaces=nsmap)
     if len(element) > 0:
-        meta_obj.doc_id = etree.tostring(element[0],  method='text', encoding='utf8')
+        meta_obj.editors = element[0]
 
-    element = root.xpath("//article-meta/article-id[@pub-id-type='pmid']")
+    element = root.xpath("//h:head/h:meta[@name='citation_doi']/@content", namespaces=nsmap)
     if len(element) > 0:
-        meta_obj.pubmed_id = etree.tostring(element[0],  method='text', encoding='utf8')
+        meta_obj.doc_id = element[0]
 
-    element = root.xpath("//article-meta/article-id[@pub-id-type='pmc']")
+    element = root.xpath("//h:head/h:meta[@name='citation_pmid']/@content", namespaces=nsmap)
     if len(element) > 0:
-        meta_obj.pmc_id = etree.tostring(element[0],  method='text', encoding='utf8')
+        meta_obj.pubmed_id = element[0]
 
-    element = root.xpath("//article-meta/pub-date[@pub-type != 'collection']/year")
-    temp_year = datetime.MINYEAR
+    meta_obj.pmc_id = pmc_id
+
+    element = root.xpath("//h:head/h:meta[@name='citation_date']/@content", namespaces=nsmap)
     if len(element) > 0:
-        temp_year = int(etree.tostring(element[0],  method='text', encoding='utf8'))
+        meta_obj.pub_date = datetime.date.strptime(element[0], '%d %b %Y').date()
 
-    element = root.xpath("//article-meta/pub-date[@pub-type != 'collection']/month")
-    temp_month = 1
-    if len(element) > 0:
-        temp_month = int(etree.tostring(element[0],  method='text', encoding='utf8'))
+    element = root.xpath("//h:body//h:div[contains(@class, 'fm-copyright')]", namespaces=nsmap)
+    copyrightStr = ""
+    for item in element:
+        copyrightStr = copyrightStr + " " + etree.tostring(element,  method='text', encoding='utf8')
+    meta_obj.copyright = copyrightStr.rstrip(" ")
 
-    element = root.xpath("//article-meta/pub-date[@pub-type != 'collection']/day")
-    temp_day = 1
-    if len(element) > 0:
-        temp_day = int(etree.tostring(element[0],  method='text', encoding='utf8'))
 
-    meta_obj.pub_date = datetime.date(temp_year, temp_month, temp_day)
+    meta_obj.license = copyrightStr
 
-    element = root.xpath("//article-meta/copyright-statement")
-    if len(element) > 0:
-        meta_obj.copyright = etree.tostring(element[0],  method='text', encoding='utf8')
-
-    element = root.xpath("//permissions/license/license-p")
-    if len(element) < 0:
-        meta_obj.license = etree.tostring(element[0],  method='text', encoding='utf8')
-
-    elements = root.xpath("//article-meta/contrib-group/contrib[@contrib-type='author'][.//name/surname/text() and .//name/given-names/text()]")
-    authorStr = ""
-    for element in elements:
-        surname = element.xpath(".//name/surname/text()")[0]
-        givenName = element.xpath(".//name/given-names/text()")[0]
-        fullname = givenName + " " + surname
-        authorStr = authorStr + fullname + ","
-    authorStr = authorStr.rstrip(',')
-    meta_obj.author = authorStr
+    element = root.xpath("//h:head//h:meta[@name = 'citation_authors']/@content", namespaces=nsmap)
+    if len(element):
+        meta_obj.author = element[0]
 
     meta_obj.rec_update_time = datetime.datetime.now()
     meta_obj.rec_update_by = "sys"
